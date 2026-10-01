@@ -119,9 +119,12 @@ def safe_extract_zip(archive_path: Path, destination: Path) -> Path:
 
 
 def _atomic_csv(frame: pd.DataFrame, path: Path) -> None:
+    """按Windows阶段产物的CRLF字节格式写出，确保Linux云端哈希一致。"""
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".part")
-    frame.to_csv(temporary, index=False, encoding="utf-8-sig")
+    frame.to_csv(
+        temporary, index=False, encoding="utf-8-sig", lineterminator="\r\n"
+    )
     os.replace(temporary, path)
 
 
@@ -251,8 +254,12 @@ def ensure_fixed_split(root: Path | str = PROJECT_ROOT) -> dict[str, Any]:
     processed.mkdir(parents=True, exist_ok=True)
     train_tmp = train_path.with_suffix(".csv.part")
     test_tmp = test_path.with_suffix(".csv.part")
-    train.to_csv(train_tmp, index=False, encoding="utf-8-sig")
-    test.to_csv(test_tmp, index=False, encoding="utf-8-sig")
+    train.to_csv(
+        train_tmp, index=False, encoding="utf-8-sig", lineterminator="\r\n"
+    )
+    test.to_csv(
+        test_tmp, index=False, encoding="utf-8-sig", lineterminator="\r\n"
+    )
     if calculate_file_sha256(train_tmp) != manifest["train_sha256"]:
         train_tmp.unlink(missing_ok=True)
         test_tmp.unlink(missing_ok=True)

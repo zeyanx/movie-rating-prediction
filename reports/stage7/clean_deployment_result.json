@@ -1,7 +1,7 @@
 {
-  "verified_at": "2026-10-01T11:23:29.161479+00:00",
-  "python": "C:\\Users\\XUSITIAN\\Documents\\Codex\\2026-10-01\\streamlit-windows-pycharm-anaconda-miniconda-movie\\.venv-stage7\\Scripts\\python.exe",
-  "environment_test": "新建venv并从requirements.txt安装成功",
+  "verified_at": "2026-10-01T11:54:28.721243+00:00",
+  "python": "C:\\Users\\XUSITIAN\\.conda\\envs\\movie\\python.exe",
+  "environment_test": "复用当前已核验Python 3.10环境",
   "source_data_in_bundle_before_start": false,
   "database_in_bundle_before_start": false,
   "result": "passed",
