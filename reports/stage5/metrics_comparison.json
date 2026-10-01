@@ -1,0 +1,80 @@
+{
+  "evaluation_data": "固定测试集20000条",
+  "models": [
+    {
+      "error_std": 0.9289025346,
+      "mae": 0.7333211836,
+      "mae_improvement_vs_baseline_percent": 22.3743922958,
+      "mae_rank": 1,
+      "mean_error": 0.0145841647,
+      "model": "mlp",
+      "prediction_max": 4.6378784,
+      "prediction_min": 1.4435871,
+      "r2": 0.3188647292,
+      "r2_rank": 1,
+      "rmse": 0.9290170163,
+      "rmse_improvement_vs_baseline_percent": 17.4690802945,
+      "rmse_rank": 1
+    },
+    {
+      "error_std": 0.9569027454,
+      "mae": 0.7592373105,
+      "mae_improvement_vs_baseline_percent": 19.631044434,
+      "mae_rank": 2,
+      "mean_error": -0.0155279929,
+      "model": "random_forest",
+      "prediction_max": 4.8575391856,
+      "prediction_min": 1.4287345938,
+      "r2": 0.2771703152,
+      "r2_rank": 2,
+      "rmse": 0.9570287262,
+      "rmse_improvement_vs_baseline_percent": 14.9806089958,
+      "rmse_rank": 2
+    },
+    {
+      "error_std": 0.9699480327,
+      "mae": 0.7707390415,
+      "mae_improvement_vs_baseline_percent": 18.4135303681,
+      "mae_rank": 3,
+      "mean_error": 0.0270234216,
+      "model": "xgboost",
+      "prediction_max": 5.0,
+      "prediction_min": 1.2765994072,
+      "r2": 0.2569467439,
+      "r2_rank": 3,
+      "rmse": 0.9703244053,
+      "rmse_improvement_vs_baseline_percent": 13.7994631131,
+      "rmse_rank": 3
+    },
+    {
+      "error_std": 1.01419579,
+      "mae": 0.8711647079,
+      "mae_improvement_vs_baseline_percent": 7.7829859939,
+      "mae_rank": 4,
+      "mean_error": -0.3182734627,
+      "model": "adaboost",
+      "prediction_max": 4.469775475,
+      "prediction_min": 1.876498801,
+      "r2": 0.1082920905,
+      "r2_rank": 4,
+      "rmse": 1.0629633566,
+      "rmse_improvement_vs_baseline_percent": 5.5697130457,
+      "rmse_rank": 4
+    },
+    {
+      "error_std": 1.1256593523,
+      "mae": 0.9446897812,
+      "mae_improvement_vs_baseline_percent": 0.0,
+      "mae_rank": 5,
+      "mean_error": 1.25e-05,
+      "model": "global_mean",
+      "prediction_max": 3.5298625,
+      "prediction_min": 3.5298625,
+      "r2": -1e-10,
+      "r2_rank": 5,
+      "rmse": 1.1256593524,
+      "rmse_improvement_vs_baseline_percent": 0.0,
+      "rmse_rank": 5
+    }
+  ]
+}

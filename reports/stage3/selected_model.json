@@ -1,0 +1,9 @@
+{
+  "model_artifact": "models/stage3/random_forest.joblib",
+  "selected_at": "2026-10-01T08:38:46.538167+00:00",
+  "selected_cv_mae": 0.7597454663126361,
+  "selected_cv_rmse": 0.955915036721674,
+  "selected_model": "random_forest",
+  "selection_metric": "mean_5fold_cv_rmse",
+  "selection_rule": "最低平均CV RMSE；若相同则比较MAE和训练时间"
+}

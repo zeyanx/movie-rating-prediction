@@ -1,0 +1,24 @@
+{
+  "app_title": "MovieLens 智能评分与推荐系统",
+  "default_user_id": 1,
+  "default_model": "mlp",
+  "fallback_model": "global_mean",
+  "default_top_n": 10,
+  "max_top_n": 20,
+  "minimum_popularity_count": 5,
+  "popularity_prior_count": 20,
+  "recommendation_weights": {
+    "mlp_prediction": 0.85,
+    "genre_preference": 0.10,
+    "bayesian_popularity": 0.05
+  },
+  "reference_timestamp_strategy": "user_latest_or_dataset_max",
+  "database_path": "data/app/movie_app.db",
+  "model_recommendation_path": "reports/stage5/model_recommendation.json",
+  "model_lab_models": [
+    "global_mean",
+    "random_forest",
+    "xgboost",
+    "mlp"
+  ]
+}

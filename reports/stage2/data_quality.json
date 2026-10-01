@@ -1,0 +1,129 @@
+{
+  "dataset": "MovieLens 100K",
+  "duplicate_user_movie_pairs": 0,
+  "gender_values": [
+    "F",
+    "M"
+  ],
+  "invalid_rating_timestamps": 0,
+  "join_validation": "many_to_one通过，100000条评分均匹配用户和电影元数据",
+  "missing_release_dates": 1,
+  "preprocessing_policy": {
+    "feature_engineering": "本阶段未进行ID编码、独热编码、统计特征或标准化",
+    "missing_values": "不凭空填补；video_release_date本阶段不作为模型输入",
+    "string_cleanup": "仅清理字符串首尾空格",
+    "timestamp": "仅额外解析为UTC用于质量检查，原始整数时间戳保持不变"
+  },
+  "rating_datetime_utc_max": "1998-04-22T23:10:38+00:00",
+  "rating_datetime_utc_min": "1997-09-20T03:05:10+00:00",
+  "rating_distribution": {
+    "1": {
+      "count": 6110,
+      "proportion": 0.0611
+    },
+    "2": {
+      "count": 11370,
+      "proportion": 0.1137
+    },
+    "3": {
+      "count": 27145,
+      "proportion": 0.27145
+    },
+    "4": {
+      "count": 34174,
+      "proportion": 0.34174
+    },
+    "5": {
+      "count": 21201,
+      "proportion": 0.21201
+    }
+  },
+  "rating_range": {
+    "max": 5,
+    "min": 1
+  },
+  "tables": {
+    "movies": {
+      "columns": [
+        "movie_id",
+        "title",
+        "release_date",
+        "video_release_date",
+        "imdb_url",
+        "genres"
+      ],
+      "dtypes": {
+        "genres": "object",
+        "imdb_url": "object",
+        "movie_id": "int64",
+        "release_date": "object",
+        "title": "object",
+        "video_release_date": "object"
+      },
+      "duplicate_rows": 0,
+      "missing_values": {
+        "genres": 0,
+        "imdb_url": 3,
+        "movie_id": 0,
+        "release_date": 1,
+        "title": 0,
+        "video_release_date": 1682
+      },
+      "rows": 1682
+    },
+    "ratings": {
+      "columns": [
+        "user_id",
+        "movie_id",
+        "rating",
+        "timestamp"
+      ],
+      "dtypes": {
+        "movie_id": "int64",
+        "rating": "int64",
+        "timestamp": "int64",
+        "user_id": "int64"
+      },
+      "duplicate_rows": 0,
+      "missing_values": {
+        "movie_id": 0,
+        "rating": 0,
+        "timestamp": 0,
+        "user_id": 0
+      },
+      "rows": 100000
+    },
+    "users": {
+      "columns": [
+        "user_id",
+        "age",
+        "gender",
+        "occupation",
+        "zip_code"
+      ],
+      "dtypes": {
+        "age": "int64",
+        "gender": "object",
+        "occupation": "object",
+        "user_id": "int64",
+        "zip_code": "object"
+      },
+      "duplicate_rows": 0,
+      "missing_values": {
+        "age": 0,
+        "gender": 0,
+        "occupation": 0,
+        "user_id": 0,
+        "zip_code": 0
+      },
+      "rows": 943
+    }
+  },
+  "unique_movies_in_ratings": 1682,
+  "unique_users_in_ratings": 943,
+  "unparseable_non_missing_release_dates": 0,
+  "user_age_range": {
+    "max": 73,
+    "min": 7
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "adaboost": {
+    "fit_time_seconds": 67.86509230000047,
+    "mae": 0.871164707889284,
+    "prediction_max": 4.469775474956822,
+    "prediction_min": 1.8764988009592327,
+    "prediction_time_seconds": 0.3833862000010413,
+    "r2": 0.10829209046257426,
+    "rmse": 1.0629633566039
+  },
+  "random_forest": {
+    "fit_time_seconds": 6.800875500000984,
+    "mae": 0.7592373105297082,
+    "prediction_max": 4.857539185560546,
+    "prediction_min": 1.428734593837535,
+    "prediction_time_seconds": 0.22697580000021844,
+    "r2": 0.2771703152378645,
+    "rmse": 0.9570287261966575
+  },
+  "xgboost": {
+    "fit_time_seconds": 1.3975443999988784,
+    "mae": 0.7707390414953231,
+    "prediction_max": 5.0,
+    "prediction_min": 1.276599407196045,
+    "prediction_time_seconds": 0.13431829999899492,
+    "r2": 0.2569467439496974,
+    "rmse": 0.9703244052902847
+  }
+}

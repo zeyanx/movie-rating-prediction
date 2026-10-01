@@ -1,0 +1,14 @@
+{
+  "movie_popularity_thresholds": {
+    "low_max": 9.0,
+    "medium_max": 46.0
+  },
+  "source": "仅使用第2阶段80000条训练数据的实体评分次数",
+  "unseen_movie_test_rows": 33,
+  "unseen_test_movie_count": 30,
+  "unseen_test_user_count": 0,
+  "user_activity_thresholds": {
+    "low_max": 33.0,
+    "medium_max": 93.0
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "completed_at": "2026-10-01T08:38:47.152388+00:00",
+  "cv_total_fit_seconds": 489.0549044000054,
+  "cv_total_score_seconds": 4.9561557000033645,
+  "final_fit_seconds": {
+    "adaboost": 67.86509230000047,
+    "random_forest": 6.800875500000984,
+    "xgboost": 1.3975443999988784
+  },
+  "reproducibility": {
+    "core_metrics_match": true,
+    "previous_results_found": true
+  },
+  "started_with_stage2_verification": true,
+  "test_sha256": "ea41954dea31302373b4d1f23fa331613466d445c3eb3ef309138ee3f4839c91",
+  "total_elapsed_seconds": 577.0278773999999,
+  "train_sha256": "d2c8ac22231cc761a3a522e01e1a955c9d7cca847c0deb2ef1e8c9ed863c9053"
+}

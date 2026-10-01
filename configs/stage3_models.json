@@ -1,0 +1,49 @@
+{
+  "random_state": 42,
+  "cv": {
+    "n_splits": 5,
+    "shuffle": true,
+    "random_state": 42,
+    "n_jobs": 1
+  },
+  "feature_engineering": {
+    "user_smoothing": 10.0,
+    "movie_smoothing": 20.0
+  },
+  "models": {
+    "random_forest": {
+      "n_estimators": 200,
+      "max_depth": 18,
+      "min_samples_leaf": 2,
+      "max_features": 0.7,
+      "random_state": 42,
+      "n_jobs": -1
+    },
+    "adaboost": {
+      "estimator": {
+        "max_depth": 6,
+        "min_samples_leaf": 5,
+        "random_state": 42
+      },
+      "n_estimators": 200,
+      "learning_rate": 0.05,
+      "loss": "square",
+      "random_state": 42
+    },
+    "xgboost": {
+      "objective": "reg:squarederror",
+      "n_estimators": 400,
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 3,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "tree_method": "hist",
+      "eval_metric": "rmse",
+      "random_state": 42,
+      "n_jobs": -1
+    }
+  }
+}

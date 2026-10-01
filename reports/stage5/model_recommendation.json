@@ -1,0 +1,21 @@
+{
+  "best_ensemble_model": "random_forest",
+  "best_neural_model": "mlp",
+  "fallback_model": "global_mean",
+  "limitations": "工程推荐使用了固定测试集结果，不能继续使用同一测试集调参；未来泛化需新验证数据或嵌套评估。",
+  "primary_reason": "固定测试集RMSE最低；若差异小于0.005则进一步比较本机推理时间和文件大小",
+  "recommended_artifact": "models/stage4/mlp_final.pt",
+  "recommended_default_model": "mlp",
+  "secondary_reasons": [
+    "同时复核MAE与R²",
+    "考虑CPU端到端推理效率",
+    "考虑Streamlit部署产物大小"
+  ],
+  "selection_time": "2026-10-01T10:18:17.587117+00:00",
+  "streamlit_model_lab_models": [
+    "global_mean",
+    "random_forest",
+    "xgboost",
+    "mlp"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "created_at": "2026-10-01T09:08:16.879827+00:00",
+  "fixed_test_interaction_id_sha256": "50adb796c226527ea27b6495299cb4bec397687f255a2175c7ec6145566e024f",
+  "fixed_test_rows": 20000,
+  "internal_train_interaction_id_sha256": "af2c682920b0296e379c01ff1dd08aac6aa6511466bd5123a9581b68b50eaa07",
+  "internal_train_rows": 72000,
+  "random_seed": 42,
+  "source_test_file": "data/processed/test_ratings.csv",
+  "source_train_file": "data/processed/train_ratings.csv",
+  "stratify_column": "rating",
+  "test_sha256": "ea41954dea31302373b4d1f23fa331613466d445c3eb3ef309138ee3f4839c91",
+  "train_sha256": "d2c8ac22231cc761a3a522e01e1a955c9d7cca847c0deb2ef1e8c9ed863c9053",
+  "validation_interaction_id_sha256": "630f959427308b65919646f1ad1989450fd5918ea6795c67dcb371220c8a7b06",
+  "validation_rows": 8000,
+  "validation_size": 0.1
+}

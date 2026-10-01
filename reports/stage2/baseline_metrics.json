@@ -1,0 +1,18 @@
+{
+  "global_mean": 3.5298625,
+  "model_name": "global_mean_baseline",
+  "rating_max": 5.0,
+  "rating_min": 1.0,
+  "test_metrics": {
+    "mae": 0.9446897812499999,
+    "r2": -1.2331202725590629e-10,
+    "rmse": 1.125659352404736
+  },
+  "test_rows": 20000,
+  "train_metrics": {
+    "mae": 0.9447022812500003,
+    "r2": 0.0,
+    "rmse": 1.1256701253447876
+  },
+  "train_rows": 80000
+}

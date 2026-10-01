@@ -1,0 +1,9 @@
+{
+  "best_epoch": 10,
+  "early_stopping_triggered": true,
+  "epochs_trained": 16,
+  "loss": 0.88875412940979,
+  "mae": 0.7540020914822817,
+  "r2": 0.29873860605274727,
+  "rmse": 0.9427375577068747
+}

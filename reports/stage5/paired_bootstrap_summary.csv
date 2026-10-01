@@ -1,0 +1,7 @@
+﻿comparison,ensemble_model,metric,delta_definition,point_estimate_delta,bootstrap_mean_delta,confidence_lower,confidence_upper,mlp_win_probability,resamples,confidence_level,random_seed
+mlp_vs_random_forest,random_forest,rmse,mlp_metric_minus_ensemble_metric,-0.028011709906347937,-0.027995678223021056,-0.032624752882107436,-0.023292864689964807,1.0,2000,0.95,42
+mlp_vs_random_forest,random_forest,mae,mlp_metric_minus_ensemble_metric,-0.025916126914708237,-0.025914934273764616,-0.029875577866002437,-0.021794878036833876,1.0,2000,0.95,42
+mlp_vs_adaboost,adaboost,rmse,mlp_metric_minus_ensemble_metric,-0.13394634031359054,-0.13397238344918025,-0.14154080618256726,-0.12653792337325215,1.0,2000,0.95,42
+mlp_vs_adaboost,adaboost,mae,mlp_metric_minus_ensemble_metric,-0.13784352427428403,-0.13790486364057575,-0.14459497705986318,-0.13125526247406394,1.0,2000,0.95,42
+mlp_vs_xgboost,xgboost,rmse,mlp_metric_minus_ensemble_metric,-0.041307388999975214,-0.041313102285591825,-0.04668657993370098,-0.03555770675883438,1.0,2000,0.95,42
+mlp_vs_xgboost,xgboost,mae,mlp_metric_minus_ensemble_metric,-0.037417857880323147,-0.03741155000385819,-0.04167894082790389,-0.03279607987607248,1.0,2000,0.95,42

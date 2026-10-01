@@ -1,0 +1,38 @@
+{
+  "stage": 7,
+  "entrypoint": "app.py",
+  "python_version": "3.10",
+  "official_dataset_url": "https://files.grouplens.org/datasets/movielens/ml-100k.zip",
+  "official_dataset_md5": "0e33842e24a9c977be4e0107933c0723",
+  "runtime_data_policy": "应用首次启动时从GroupLens官方地址下载、校验并转换；原始数据不纳入公开仓库",
+  "repository_url": null,
+  "streamlit_cloud_url": null,
+  "required_models": [
+    "models/global_mean_baseline.joblib",
+    "models/stage3/random_forest.joblib",
+    "models/stage3/xgboost.joblib",
+    "models/stage4/final_preprocessor.joblib",
+    "models/stage4/mlp_final.pt",
+    "models/stage4/model_metadata.json"
+  ],
+  "required_reports": [
+    "reports/stage5/metrics_comparison.csv",
+    "reports/stage5/efficiency_benchmark.csv",
+    "reports/stage5/paired_bootstrap_summary.csv",
+    "reports/stage5/ensemble_group_importance.csv",
+    "reports/stage5/mlp_permutation_importance.csv",
+    "reports/stage5/segment_metrics.csv",
+    "reports/stage5/residual_summary.csv",
+    "reports/stage5/actual_rating_diagnostics.csv",
+    "reports/stage5/model_recommendation.json"
+  ],
+  "runtime_generated": [
+    "data/raw/ratings.csv",
+    "data/raw/movies.csv",
+    "data/raw/users.csv",
+    "data/processed/train_ratings.csv",
+    "data/processed/test_ratings.csv",
+    "data/app/movie_app.db"
+  ],
+  "git_lfs_paths": ["models/stage3/random_forest.joblib"]
+}

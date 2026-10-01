@@ -1,0 +1,89 @@
+{
+  "delta_definition": "MLP指标减集成模型指标，负值表示MLP更好",
+  "results": [
+    {
+      "bootstrap_mean_delta": -0.0279956782,
+      "comparison": "mlp_vs_random_forest",
+      "confidence_level": 0.95,
+      "confidence_lower": -0.0326247529,
+      "confidence_upper": -0.0232928647,
+      "delta_definition": "mlp_metric_minus_ensemble_metric",
+      "ensemble_model": "random_forest",
+      "metric": "rmse",
+      "mlp_win_probability": 1.0,
+      "point_estimate_delta": -0.0280117099,
+      "random_seed": 42,
+      "resamples": 2000
+    },
+    {
+      "bootstrap_mean_delta": -0.0259149343,
+      "comparison": "mlp_vs_random_forest",
+      "confidence_level": 0.95,
+      "confidence_lower": -0.0298755779,
+      "confidence_upper": -0.021794878,
+      "delta_definition": "mlp_metric_minus_ensemble_metric",
+      "ensemble_model": "random_forest",
+      "metric": "mae",
+      "mlp_win_probability": 1.0,
+      "point_estimate_delta": -0.0259161269,
+      "random_seed": 42,
+      "resamples": 2000
+    },
+    {
+      "bootstrap_mean_delta": -0.1339723834,
+      "comparison": "mlp_vs_adaboost",
+      "confidence_level": 0.95,
+      "confidence_lower": -0.1415408062,
+      "confidence_upper": -0.1265379234,
+      "delta_definition": "mlp_metric_minus_ensemble_metric",
+      "ensemble_model": "adaboost",
+      "metric": "rmse",
+      "mlp_win_probability": 1.0,
+      "point_estimate_delta": -0.1339463403,
+      "random_seed": 42,
+      "resamples": 2000
+    },
+    {
+      "bootstrap_mean_delta": -0.1379048636,
+      "comparison": "mlp_vs_adaboost",
+      "confidence_level": 0.95,
+      "confidence_lower": -0.1445949771,
+      "confidence_upper": -0.1312552625,
+      "delta_definition": "mlp_metric_minus_ensemble_metric",
+      "ensemble_model": "adaboost",
+      "metric": "mae",
+      "mlp_win_probability": 1.0,
+      "point_estimate_delta": -0.1378435243,
+      "random_seed": 42,
+      "resamples": 2000
+    },
+    {
+      "bootstrap_mean_delta": -0.0413131023,
+      "comparison": "mlp_vs_xgboost",
+      "confidence_level": 0.95,
+      "confidence_lower": -0.0466865799,
+      "confidence_upper": -0.0355577068,
+      "delta_definition": "mlp_metric_minus_ensemble_metric",
+      "ensemble_model": "xgboost",
+      "metric": "rmse",
+      "mlp_win_probability": 1.0,
+      "point_estimate_delta": -0.041307389,
+      "random_seed": 42,
+      "resamples": 2000
+    },
+    {
+      "bootstrap_mean_delta": -0.03741155,
+      "comparison": "mlp_vs_xgboost",
+      "confidence_level": 0.95,
+      "confidence_lower": -0.0416789408,
+      "confidence_upper": -0.0327960799,
+      "delta_definition": "mlp_metric_minus_ensemble_metric",
+      "ensemble_model": "xgboost",
+      "metric": "mae",
+      "mlp_win_probability": 1.0,
+      "point_estimate_delta": -0.0374178579,
+      "random_seed": 42,
+      "resamples": 2000
+    }
+  ]
+}

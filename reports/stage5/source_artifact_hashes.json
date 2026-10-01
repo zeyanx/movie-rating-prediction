@@ -1,0 +1,102 @@
+{
+  "all_unchanged": true,
+  "artifacts": [
+    {
+      "after_sha256": "d2c8ac22231cc761a3a522e01e1a955c9d7cca847c0deb2ef1e8c9ed863c9053",
+      "before_sha256": "d2c8ac22231cc761a3a522e01e1a955c9d7cca847c0deb2ef1e8c9ed863c9053",
+      "path": "data/processed/train_ratings.csv",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "ea41954dea31302373b4d1f23fa331613466d445c3eb3ef309138ee3f4839c91",
+      "before_sha256": "ea41954dea31302373b4d1f23fa331613466d445c3eb3ef309138ee3f4839c91",
+      "path": "data/processed/test_ratings.csv",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "ea8a0efa33a7ac21f732d22d2e465a8719ec94cc6da5286b63eb022dec253a4c",
+      "before_sha256": "ea8a0efa33a7ac21f732d22d2e465a8719ec94cc6da5286b63eb022dec253a4c",
+      "path": "models/global_mean_baseline.joblib",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "8bb7cf6c0382036c126d2f46bb326583062e6055db4193092c895445bfdbff9b",
+      "before_sha256": "8bb7cf6c0382036c126d2f46bb326583062e6055db4193092c895445bfdbff9b",
+      "path": "models/stage3/random_forest.joblib",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "d90791f4e03feaa6f25462620a9b9135af0455c66f1de590e9bd58c6e07d6d33",
+      "before_sha256": "d90791f4e03feaa6f25462620a9b9135af0455c66f1de590e9bd58c6e07d6d33",
+      "path": "models/stage3/adaboost.joblib",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "9c7c6412d2709592dc6b86d1c35134c507a795c1f206227745744c3334b30ac3",
+      "before_sha256": "9c7c6412d2709592dc6b86d1c35134c507a795c1f206227745744c3334b30ac3",
+      "path": "models/stage3/xgboost.joblib",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "46f5d9cfa66cb2846e9a5e950e86fc529ceb5b6348c262d4241db36db4b6e947",
+      "before_sha256": "46f5d9cfa66cb2846e9a5e950e86fc529ceb5b6348c262d4241db36db4b6e947",
+      "path": "models/stage3/best_ensemble.joblib",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "8053627e7a9378fea8756f4b780d3beea113ca2cc1b2874ed685b1806cf8ea18",
+      "before_sha256": "8053627e7a9378fea8756f4b780d3beea113ca2cc1b2874ed685b1806cf8ea18",
+      "path": "models/stage4/mlp_validation_best.pt",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "2ef5706b96df0eb7e4006e45aae31561775a221decbcd01a7c4f979779fe9bb0",
+      "before_sha256": "2ef5706b96df0eb7e4006e45aae31561775a221decbcd01a7c4f979779fe9bb0",
+      "path": "models/stage4/mlp_final.pt",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "b5d796117c87b4258823152f2eab2b047300bbbc1503e4592f36c7a4bee0df90",
+      "before_sha256": "b5d796117c87b4258823152f2eab2b047300bbbc1503e4592f36c7a4bee0df90",
+      "path": "models/stage4/validation_preprocessor.joblib",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "49ec2e13c0cc53e8557c312020fbdd8359a04dd7c6c32d45a558451ca8a48fe9",
+      "before_sha256": "49ec2e13c0cc53e8557c312020fbdd8359a04dd7c6c32d45a558451ca8a48fe9",
+      "path": "models/stage4/final_preprocessor.joblib",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "627edcbf10ce2008c6d3e8f1564982d7aff28d4e688b42fb72f9cbf4ccf5bfcb",
+      "before_sha256": "627edcbf10ce2008c6d3e8f1564982d7aff28d4e688b42fb72f9cbf4ccf5bfcb",
+      "path": "models/stage4/model_metadata.json",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "405dd4ebbb85714ec4d47a4874edbfc1cdd3bdfdca30a5ece2ecb07e95425c70",
+      "before_sha256": "405dd4ebbb85714ec4d47a4874edbfc1cdd3bdfdca30a5ece2ecb07e95425c70",
+      "path": "reports/stage2/test_predictions.csv",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "e25b05757b90ae1d6494008b8d9268ab945d6fdcbfca3c6c8b12c9e8623ce33a",
+      "before_sha256": "e25b05757b90ae1d6494008b8d9268ab945d6fdcbfca3c6c8b12c9e8623ce33a",
+      "path": "reports/stage3/test_predictions.csv",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "b81257d6b3d3eebe8fb8309d7dc207f8def863f2713829c81d2d55a1ca8c6264",
+      "before_sha256": "b81257d6b3d3eebe8fb8309d7dc207f8def863f2713829c81d2d55a1ca8c6264",
+      "path": "reports/stage3/feature_importance.csv",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "8ebba491b626d01489982f5db00dcd016fc37444f0a9f105323c5a21ea6afcd8",
+      "before_sha256": "8ebba491b626d01489982f5db00dcd016fc37444f0a9f105323c5a21ea6afcd8",
+      "path": "reports/stage4/test_predictions.csv",
+      "unchanged": true
+    }
+  ],
+  "generated_at": "2026-10-01T10:18:19.935384+00:00"
+}

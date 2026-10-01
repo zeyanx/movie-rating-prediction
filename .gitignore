@@ -1,0 +1,50 @@
+# PyCharm 与 Python 临时文件
+.idea/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Streamlit 本地密钥（严禁提交）
+.streamlit/secrets.toml
+
+# 第6阶段本地反馈数据库可由 scripts/init_app_db.py 重建
+data/app/*.db
+data/app/*.db-wal
+data/app/*.db-shm
+data/app/*.sqlite
+data/app/*.sqlite3
+
+# 原始下载包可以随时由脚本从官方地址重新生成
+data/external/
+*.part
+
+# MovieLens许可不允许在公开仓库中重新分发数据；应用首次启动时自动从官方地址生成
+data/raw/*.csv
+data/processed/*.csv
+reports/**/test_predictions.csv
+reports/stage5/unified_test_predictions.csv
+
+# 仅发布网页推理必需的模型，其余训练中间产物不进入部署仓库
+models/*
+!models/global_mean_baseline.joblib
+!models/stage3/
+models/stage3/*
+!models/stage3/random_forest.joblib
+!models/stage3/xgboost.joblib
+!models/stage4/
+models/stage4/*
+!models/stage4/final_preprocessor.joblib
+!models/stage4/mlp_final.pt
+!models/stage4/model_metadata.json
+artifacts/
+checkpoints/
+*.tmp
+
+# 干净部署测试与本机临时环境
+.venv-stage7/
+work/stage7-*/
+reports/stage7/screenshots/local-*.png
+
+# 常见系统与编辑器文件
+.DS_Store
+Thumbs.db

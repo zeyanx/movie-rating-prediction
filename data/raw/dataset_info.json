@@ -1,0 +1,35 @@
+{
+  "dataset_name": "MovieLens 100K",
+  "official_download_url": "https://files.grouplens.org/datasets/movielens/ml-100k.zip",
+  "official_readme_url": "https://files.grouplens.org/datasets/movielens/ml-100k-README.txt",
+  "converted_at_utc": "2026-10-01T07:47:02.316367+00:00",
+  "archive_md5": "0e33842e24a9c977be4e0107933c0723",
+  "rating_count": 100000,
+  "user_count": 943,
+  "movie_count": 1682,
+  "rating_min": 1,
+  "rating_max": 5,
+  "columns": {
+    "ratings.csv": [
+      "user_id",
+      "movie_id",
+      "rating",
+      "timestamp"
+    ],
+    "users.csv": [
+      "user_id",
+      "age",
+      "gender",
+      "occupation",
+      "zip_code"
+    ],
+    "movies.csv": [
+      "movie_id",
+      "title",
+      "release_date",
+      "video_release_date",
+      "imdb_url",
+      "genres"
+    ]
+  }
+}

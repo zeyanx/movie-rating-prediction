@@ -1,0 +1,87 @@
+{
+  "cold_start_test_rows": 33,
+  "created_at": "2026-10-01T08:02:06.237540+00:00",
+  "random_state": 42,
+  "rating_distribution_full": {
+    "1": {
+      "count": 6110,
+      "proportion": 0.0611
+    },
+    "2": {
+      "count": 11370,
+      "proportion": 0.1137
+    },
+    "3": {
+      "count": 27145,
+      "proportion": 0.27145
+    },
+    "4": {
+      "count": 34174,
+      "proportion": 0.34174
+    },
+    "5": {
+      "count": 21201,
+      "proportion": 0.21201
+    }
+  },
+  "rating_distribution_test": {
+    "1": {
+      "count": 1222,
+      "proportion": 0.0611
+    },
+    "2": {
+      "count": 2274,
+      "proportion": 0.1137
+    },
+    "3": {
+      "count": 5429,
+      "proportion": 0.27145
+    },
+    "4": {
+      "count": 6835,
+      "proportion": 0.34175
+    },
+    "5": {
+      "count": 4240,
+      "proportion": 0.212
+    }
+  },
+  "rating_distribution_train": {
+    "1": {
+      "count": 4888,
+      "proportion": 0.0611
+    },
+    "2": {
+      "count": 9096,
+      "proportion": 0.1137
+    },
+    "3": {
+      "count": 21716,
+      "proportion": 0.27145
+    },
+    "4": {
+      "count": 27339,
+      "proportion": 0.3417375
+    },
+    "5": {
+      "count": 16961,
+      "proportion": 0.2120125
+    }
+  },
+  "shuffle": true,
+  "source_file": "data/raw/ratings.csv",
+  "source_sha256": "61dd913405d41611be2caa06fecd04f8f0ae501de3f1aa81f7cba89768aff279",
+  "split_method": "sklearn.model_selection.train_test_split",
+  "stratify_column": "rating",
+  "test_rows": 20000,
+  "test_sha256": "ea41954dea31302373b4d1f23fa331613466d445c3eb3ef309138ee3f4839c91",
+  "test_size": 0.2,
+  "test_unique_movies": 1396,
+  "test_unique_users": 943,
+  "train_rows": 80000,
+  "train_sha256": "d2c8ac22231cc761a3a522e01e1a955c9d7cca847c0deb2ef1e8c9ed863c9053",
+  "train_unique_movies": 1652,
+  "train_unique_users": 943,
+  "unseen_test_movies": 30,
+  "unseen_test_users": 0
+}
