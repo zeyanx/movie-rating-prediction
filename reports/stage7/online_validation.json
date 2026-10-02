@@ -1,27 +1,27 @@
 {
-  "validated_at": "2026-10-02T20:36:00+08:00",
+  "validated_at": "2026-10-02T21:18:00+08:00",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
   "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
-  "verified_runtime_commit": "81c0f82",
+  "verified_runtime_commit": "f1e5808",
   "cloud_python": "3.11",
   "result": "passed",
   "pages": [
     {
       "name": "首页",
       "route": "/",
-      "checks": ["100000条评分", "943名用户", "1682部电影", "模型指标表和个性化推荐可见"],
+      "checks": ["全中文首页", "统一电影数据概况", "中文快速搜索", "中国与其他国家电影混合推荐预览"],
       "screenshot": "reports/stage7/screenshots/01_home.png"
     },
     {
-      "name": "电影详情",
+      "name": "评分预测",
       "route": "/~/+/movie_detail",
-      "checks": ["Star Wars (1977)详情", "MLP预测4.54/5", "训练期统计和评分分布可见"],
+      "checks": ["流浪地球中文详情", "梯度提升树预测3.45/5", "多模型评分比较", "三条中文评分依据"],
       "screenshot": "reports/stage7/screenshots/02_movie_detail.png"
     },
     {
-      "name": "中文电影库",
+      "name": "电影库",
       "route": "/~/+/chinese_catalog",
-      "checks": ["80部MovieLens中文片名可检索", "48部中国电影扩展目录可筛选", "300部中国电影真实评分训练库可筛选", "55,483条评分和5,973名独立用户说明可见", "XGBoost、随机森林和MLP在线预测均成功", "预测结果展示基于用户与影片均值的推荐理由", "冷启动边界提示可见", "扩展电影想看记录可写入并读回"],
+      "checks": ["统一展示380部电影", "中国电影300部", "其他国家电影80部", "中文片名统一检索", "地区和年份筛选", "按影片来源自动调用评分模型"],
       "online_prediction": {
         "movie": "流浪地球",
         "user_id": 1,
@@ -34,7 +34,7 @@
     {
       "name": "个性化推荐",
       "route": "/~/+/recommendations",
-      "checks": ["用户1 Top-10推荐", "每部电影显示多条中文推荐理由", "候选过滤说明可见"],
+      "checks": ["用户1前10项推荐", "中国电影5部", "其他国家电影5部", "模型名称和类型名称均为中文", "每部电影显示多条中文推荐理由"],
       "screenshot": "reports/stage7/screenshots/03_recommendations.png"
     },
     {
@@ -44,14 +44,14 @@
       "screenshot": "reports/stage7/screenshots/04_my_movies.png"
     },
     {
-      "name": "模型实验室",
+      "name": "模型分析",
       "route": "/~/+/model_lab",
-      "checks": ["五模型统一测试集指标可见", "MLP最低RMSE为0.9290", "四模型在线推理已执行且无错误"],
+      "checks": ["五模型统一测试集指标可见", "评价指标和表格列名中文化", "四模型在线推理已执行且无错误"],
       "screenshot": "reports/stage7/screenshots/05_model_lab.png"
     }
   ],
   "feedback_check": {
-    "action": "将Casablanca (1942)加入想看",
+    "action": "将卡萨布兰卡加入想看",
     "immediate_readback": true,
     "durability_note": "Community Cloud本地SQLite不保证跨重启、休眠或重新部署持久化"
   }
