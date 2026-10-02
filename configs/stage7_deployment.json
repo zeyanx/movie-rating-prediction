@@ -12,7 +12,7 @@
   "feedback_backend": "sqlite_ephemeral_on_community_cloud",
   "chinese_catalog_policy": "80条MovieLens 100K中文片名映射、48条冷启动基础目录，以及300部由MovieLens 25M真实评分与Wikidata CC0元数据构建的独立训练库；三个用户和模型空间严格隔离",
   "deployment_branch": "main",
-  "deployment_commit": "6692b10",
+  "deployment_commit": "81c0f82",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
   "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
   "streamlit_cloud_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",

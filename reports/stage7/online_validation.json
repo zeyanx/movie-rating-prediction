@@ -1,8 +1,8 @@
 {
-  "validated_at": "2026-10-02T14:56:17+08:00",
+  "validated_at": "2026-10-02T20:36:00+08:00",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
   "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
-  "verified_runtime_commit": "6692b10",
+  "verified_runtime_commit": "81c0f82",
   "cloud_python": "3.11",
   "result": "passed",
   "pages": [
@@ -21,7 +21,14 @@
     {
       "name": "中文电影库",
       "route": "/~/+/chinese_catalog",
-      "checks": ["80部MovieLens中文片名可检索", "48部中国电影扩展目录可筛选", "冷启动边界提示可见", "扩展电影想看记录可写入并读回"],
+      "checks": ["80部MovieLens中文片名可检索", "48部中国电影扩展目录可筛选", "300部中国电影真实评分训练库可筛选", "55,483条评分和5,973名独立用户说明可见", "XGBoost、随机森林和MLP在线预测均成功", "预测结果展示基于用户与影片均值的推荐理由", "冷启动边界提示可见", "扩展电影想看记录可写入并读回"],
+      "online_prediction": {
+        "movie": "流浪地球",
+        "user_id": 1,
+        "xgboost": 3.45,
+        "random_forest": 3.34,
+        "mlp": 3.59
+      },
       "screenshot": "reports/stage7/screenshots/06_chinese_catalog.png"
     },
     {
