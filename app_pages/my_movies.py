@@ -6,8 +6,11 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from movie_rating.web.data_service import get_user_history, load_raw_tables
-from movie_rating.web.database import delete_interaction, get_interactions, upsert_interaction
+from movie_rating.web.data_service import get_user_history, movie_statistics
+from movie_rating.web.database import (
+    delete_catalog_interaction, delete_interaction, get_catalog_interactions,
+    get_interactions, upsert_catalog_interaction, upsert_interaction,
+)
 from movie_rating.web.recommendation import compute_user_genre_profile
 from movie_rating.web.ui import FEEDBACK_LABELS, STATUS_LABELS, ensure_session_state, page_intro
 
@@ -18,19 +21,23 @@ st.warning("云端SQLite不保证永久持久化：应用重启、休眠或重�
 
 history = get_user_history(user_id)
 local = get_interactions(profile_key)
-_, movies, _ = load_raw_tables()
+movies = movie_statistics()
 local_display = local.merge(
-    movies[["movie_id", "title", "genres"]], on="movie_id", how="left", validate="many_to_one"
+    movies[["movie_id", "title", "title_zh", "display_title", "genres"]],
+    on="movie_id", how="left", validate="many_to_one"
 ) if not local.empty else local.copy()
+catalog_local = get_catalog_interactions(profile_key)
 
 c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("训练期评分", len(history))
 c2.metric("训练期均分", f"{history['rating'].mean():.2f}" if not history.empty else "—")
 c3.metric("想看", int((local.get("status", pd.Series(dtype=str)) == "want_to_watch").sum()))
 c4.metric("已看", int((local.get("status", pd.Series(dtype=str)) == "watched").sum()))
-c5.metric("喜欢 / 不喜欢", f"{int((local.get('feedback', pd.Series(dtype=str)) == 'like').sum())} / {int((local.get('feedback', pd.Series(dtype=str)) == 'dislike').sum())}")
+c5.metric("扩展库记录", len(catalog_local))
 
-history_tab, local_tab, preference_tab = st.tabs(["训练期历史", "网页记录", "类型偏好"])
+history_tab, local_tab, catalog_tab, preference_tab = st.tabs(
+    ["训练期历史", "MovieLens网页记录", "中文扩展库记录", "类型偏好"]
+)
 with history_tab:
     if history.empty:
         st.info("该用户在固定训练集中没有历史评分。")
@@ -38,7 +45,9 @@ with history_tab:
         min_rating = st.slider("最低历史评分", 1, 5, 1, key="history_min_rating")
         shown = history[history["rating"] >= min_rating]
         st.dataframe(
-            shown[["movie_id", "title", "genres", "rating", "timestamp"]],
+            shown[["movie_id", "display_title", "genres", "rating", "timestamp"]].rename(
+                columns={"display_title": "中英文片名"}
+            ),
             hide_index=True, width="stretch", height=420,
         )
 
@@ -52,7 +61,9 @@ with local_tab:
         display["状态"] = display["status"].map(STATUS_LABELS)
         display["反馈"] = display["feedback"].map(FEEDBACK_LABELS)
         st.dataframe(
-            display[["movie_id", "title", "genres", "状态", "personal_rating", "反馈", "note", "updated_at"]],
+            display[["movie_id", "display_title", "genres", "状态", "personal_rating", "反馈", "note", "updated_at"]].rename(
+                columns={"display_title": "中英文片名"}
+            ),
             hide_index=True, width="stretch", height=350,
         )
         st.download_button(
@@ -64,7 +75,7 @@ with local_tab:
 
         selected_movie = st.selectbox(
             "编辑记录", display["movie_id"].astype(int).tolist(),
-            format_func=lambda value: f"{display.loc[display['movie_id'] == value, 'title'].iloc[0]} · ID {value}",
+            format_func=lambda value: f"{display.loc[display['movie_id'] == value, 'display_title'].iloc[0]} · ID {value}",
             key="my_movies_edit_selector",
         )
         record = local[local["movie_id"] == int(selected_movie)].iloc[0]
@@ -91,6 +102,62 @@ with local_tab:
         if st.button("删除记录", disabled=not confirm, type="secondary"):
             if delete_interaction(profile_key, int(selected_movie)):
                 st.success("记录已删除。")
+                st.rerun()
+
+with catalog_tab:
+    if catalog_local.empty:
+        st.info("还没有扩展中国电影记录，可在“中文电影库”页面加入想看或标记已看。")
+    else:
+        catalog_display = catalog_local.copy()
+        catalog_display["状态"] = catalog_display["status"].map(STATUS_LABELS)
+        st.dataframe(
+            catalog_display[[
+                "catalog_id", "title_zh", "title_en", "release_year", "origin",
+                "genres", "状态", "personal_rating", "note", "updated_at",
+            ]].rename(columns={
+                "catalog_id": "目录ID", "title_zh": "中文片名", "title_en": "英文片名",
+                "release_year": "年份", "origin": "地区", "genres": "类型",
+                "personal_rating": "个人评分", "note": "备注", "updated_at": "更新时间",
+            }),
+            hide_index=True, width="stretch", height=350,
+        )
+        selected_catalog = st.selectbox(
+            "编辑扩展库记录",
+            catalog_display["catalog_id"].tolist(),
+            format_func=lambda value: catalog_display.loc[
+                catalog_display["catalog_id"] == value, "title_zh"
+            ].iloc[0],
+            key="catalog_record_selector",
+        )
+        record = catalog_local[catalog_local["catalog_id"] == selected_catalog].iloc[0]
+        with st.form("edit_catalog_interaction"):
+            status_values = list(STATUS_LABELS)
+            catalog_status = st.selectbox(
+                "状态", status_values, index=status_values.index(record["status"]),
+                format_func=lambda value: STATUS_LABELS[value],
+            )
+            use_rating = st.checkbox(
+                "记录个人评分", value=pd.notna(record["personal_rating"]),
+                key="catalog_use_rating",
+            )
+            personal = st.slider(
+                "个人评分", 1.0, 5.0,
+                float(record["personal_rating"] if pd.notna(record["personal_rating"]) else 3.0),
+                0.5, disabled=not use_rating, key="catalog_personal_rating",
+            )
+            note = st.text_area("备注", value=str(record["note"]), max_chars=500, key="catalog_note")
+            save_catalog = st.form_submit_button("保存扩展库记录", type="primary")
+        if save_catalog:
+            upsert_catalog_interaction(
+                profile_key, selected_catalog, catalog_status,
+                personal if use_rating else None, note,
+            )
+            st.success("扩展库记录已更新。")
+            st.rerun()
+        confirm_catalog_delete = st.checkbox("我确认删除所选扩展库记录")
+        if st.button("删除扩展库记录", disabled=not confirm_catalog_delete):
+            if delete_catalog_interaction(profile_key, selected_catalog):
+                st.success("扩展库记录已删除。")
                 st.rerun()
 
 with preference_tab:

@@ -10,6 +10,7 @@
   "official_dataset_md5": "0e33842e24a9c977be4e0107933c0723",
   "runtime_data_policy": "应用首次启动时从GroupLens官方地址下载、校验并转换；原始数据不纳入公开仓库",
   "feedback_backend": "sqlite_ephemeral_on_community_cloud",
+  "chinese_catalog_policy": "80条MovieLens中文片名映射用于检索展示；48条独立中国电影基础目录用于冷启动浏览和个人记录，不进入既有模型训练",
   "deployment_branch": "main",
   "deployment_commit": "4cb26a8",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
@@ -33,6 +34,10 @@
     "reports/stage5/residual_summary.csv",
     "reports/stage5/actual_rating_diagnostics.csv",
     "reports/stage5/model_recommendation.json"
+  ],
+  "required_catalogs": [
+    "data/catalog/movie_localizations.csv",
+    "data/catalog/chinese_movies.csv"
   ],
   "runtime_generated": [
     "data/raw/ratings.csv",

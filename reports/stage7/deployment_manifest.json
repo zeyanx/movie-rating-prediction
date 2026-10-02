@@ -1,5 +1,5 @@
 {
-  "created_at": "2026-10-01T11:58:54.134474+00:00",
+  "created_at": "2026-10-02T07:27:56.051747+00:00",
   "entrypoint": "app.py",
   "official_dataset_url": "https://files.grouplens.org/datasets/movielens/ml-100k.zip",
   "runtime_generated": [
@@ -13,8 +13,8 @@
   "files": [
     {
       "path": "app.py",
-      "bytes": 2691,
-      "sha256": "57f3def479e0d33be53be70910a353b6612efe502bd903f20122c07baad52ae7",
+      "bytes": 2778,
+      "sha256": "7fa233504fac723e8e0db9574f9ad699d6dd5eb1ada291d9122133d68e2ef2e3",
       "should_be_tracked": true,
       "git_tracked": true,
       "git_lfs_required": false,
@@ -172,7 +172,25 @@
       "git_tracked": true,
       "git_lfs_required": false,
       "purpose": "网页聚合实验报告"
+    },
+    {
+      "path": "data/catalog/movie_localizations.csv",
+      "bytes": 4619,
+      "sha256": "d9f94d138fd9bb95a82b33717bdb98a4aa90fb5269847a482a2388943f3b3834",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "MovieLens中文片名与别名索引"
+    },
+    {
+      "path": "data/catalog/chinese_movies.csv",
+      "bytes": 10370,
+      "sha256": "b778f1b41fa9c4c70208cb71d2f63dd227b7c74f5af926acc23f5e81bb1a7f64",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "独立中国电影扩展目录"
     }
   ],
-  "total_bytes": 41016901
+  "total_bytes": 41031977
 }

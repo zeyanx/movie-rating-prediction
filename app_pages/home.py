@@ -14,7 +14,7 @@ from movie_rating.web.ui import MODEL_LABELS, ensure_session_state, page_intro, 
 
 
 user_id, profile_key = ensure_session_state()
-page_intro("MovieLens 智能评分与推荐系统", "集成学习与神经网络电影评分预测对比研究 · 第6阶段")
+page_intro("MovieLens 智能评分与推荐系统", "集成学习与神经网络电影评分预测对比研究 · 中文电影资料增强版")
 show_interaction_notice()
 
 ratings, movies, users = load_raw_tables()
@@ -49,7 +49,7 @@ left, right = st.columns([1, 1])
 with left:
     st.subheader("快速搜索")
     with st.form("home_search_form"):
-        query = st.text_input("电影标题", placeholder="例如：Toy Story")
+        query = st.text_input("中英文电影标题", placeholder="例如：玩具总动员 / Toy Story")
         submitted = st.form_submit_button("搜索")
     if submitted or query:
         matches = search_movies(query=query, limit=10)
@@ -57,7 +57,9 @@ with left:
             st.info("没有找到匹配电影，请缩短关键词或检查拼写。")
         else:
             st.dataframe(
-                matches[["movie_id", "title", "genres", "release_year", "rating_count"]],
+                matches[["movie_id", "display_title", "genres", "release_year", "rating_count"]].rename(
+                    columns={"display_title": "中英文片名"}
+                ),
                 hide_index=True, width="stretch",
             )
 
@@ -70,7 +72,8 @@ with right:
         st.info("当前没有可推荐电影，请在“我的观影”中检查排除项。")
     else:
         for row in preview.itertuples(index=False):
-            st.markdown(f"**{row.title}** · 预测 {row.mlp_prediction:.2f} 分")
+            shown_title = getattr(row, "display_title", row.title)
+            st.markdown(f"**{shown_title}** · 预测 {row.mlp_prediction:.2f} 分")
             st.caption("；".join(row.reasons))
         if metadata["relaxed_popularity"]:
             st.caption("候选较少，预览已放宽最低热度条件。")
@@ -78,6 +81,7 @@ with right:
 st.subheader("功能入口")
 st.markdown(
     "- **电影详情**：搜索电影、查看历史统计并预测评分。\n"
+    "- **中文电影库**：中文搜索MovieLens影片，并浏览独立中国电影扩展库。\n"
     "- **个性化推荐**：获取带理由的Top-N推荐并即时反馈。\n"
     "- **我的观影**：管理训练期历史与本地想看/已看记录。\n"
     "- **模型实验室**：对比五个模型、效率、Bootstrap和重要性。"

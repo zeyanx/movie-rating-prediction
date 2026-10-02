@@ -45,7 +45,9 @@ selected_id = st.selectbox(
 movie = matches[matches["movie_id"] == int(selected_id)].iloc[0]
 
 title_col, score_col = st.columns([3, 1])
-title_col.subheader(str(movie["title"]))
+title_col.subheader(str(movie["display_title"]))
+if movie.get("title_zh"):
+    title_col.caption(f"中文别名：{movie['aliases_zh'] or '—'}")
 title_col.write(f"类型：{movie['genres']}  ·  发行日期：{movie['release_date']}  ·  ID：{int(movie['movie_id'])}")
 model_input = build_prediction_frame(user_id, [int(selected_id)])
 with st.spinner("正在加载缓存的MLP并预测……"):

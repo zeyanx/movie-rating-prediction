@@ -61,6 +61,7 @@ with st.sidebar:
 pages = [
     st.Page("app_pages/home.py", title="首页", icon="🏠", default=True),
     st.Page("app_pages/movie_detail.py", title="电影详情", icon="🎞️"),
+    st.Page("app_pages/chinese_catalog.py", title="中文电影库", icon="🇨🇳"),
     st.Page("app_pages/recommendations.py", title="个性化推荐", icon="✨"),
     st.Page("app_pages/my_movies.py", title="我的观影", icon="📚"),
     st.Page("app_pages/model_lab.py", title="模型实验室", icon="🧪"),

@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RESULT = ROOT / "reports" / "stage7" / "clean_deployment_result.json"
 
-COPY_DIRS = ["app_pages", "src", ".streamlit", "configs"]
+COPY_DIRS = ["app_pages", "src", ".streamlit", "configs", "data/catalog"]
 COPY_FILES = ["app.py", "requirements.txt"]
 DEPLOY_MODELS = [
     "models/global_mean_baseline.joblib", "models/stage3/random_forest.joblib",

@@ -13,6 +13,7 @@ from movie_rating.data import RawData, load_raw_data
 from movie_rating.neural_data import enrich_interactions
 
 from .config import PROJECT_ROOT
+from .database import get_chinese_movies, get_movie_localizations
 
 
 @st.cache_data(show_spinner=False)
@@ -80,6 +81,14 @@ def movie_statistics(root: str = str(PROJECT_ROOT), prior_count: int = 20) -> pd
     result["release_year"] = pd.to_datetime(
         result["release_date"], format="%d-%b-%Y", errors="coerce"
     ).dt.year.astype("Int64")
+    localizations = get_movie_localizations()
+    result = result.merge(localizations, on="movie_id", how="left", validate="one_to_one")
+    for column in ["title_zh", "aliases_zh", "source_name", "source_url"]:
+        result[column] = result[column].fillna("").astype(str)
+    result["display_title"] = result.apply(
+        lambda row: f"{row['title_zh']} / {row['title']}" if row["title_zh"] else str(row["title"]),
+        axis=1,
+    )
     return result
 
 
@@ -96,7 +105,12 @@ def search_movies(
     movies = movie_statistics(root).copy()
     clean_query = str(query).strip()
     if clean_query:
-        movies = movies[movies["title"].str.contains(clean_query, case=False, regex=False, na=False)]
+        searchable = (
+            movies["title"].fillna("") + " "
+            + movies["title_zh"].fillna("") + " "
+            + movies["aliases_zh"].fillna("")
+        )
+        movies = movies[searchable.str.contains(clean_query, case=False, regex=False, na=False)]
     if genre and genre != "全部":
         movies = movies[
             movies["genres"].fillna("").str.split("|").map(lambda values: genre in values)
@@ -116,11 +130,57 @@ def get_movie(movie_id: int, root: str = str(PROJECT_ROOT)) -> pd.Series:
 
 def get_user_history(user_id: int, root: str = str(PROJECT_ROOT)) -> pd.DataFrame:
     train = load_train_ratings(root)
-    _, movies, _ = load_raw_tables(root)
+    movies = movie_statistics(root)
     history = train[train["user_id"] == int(user_id)].merge(
-        movies[["movie_id", "title", "genres"]], on="movie_id", how="left", validate="many_to_one"
+        movies[["movie_id", "title", "title_zh", "display_title", "genres"]],
+        on="movie_id", how="left", validate="many_to_one"
     )
     return history.sort_values("timestamp", ascending=False).reset_index(drop=True)
+
+
+def search_chinese_catalog(
+    query: str = "",
+    origin: str | None = None,
+    genre: str | None = None,
+    start_year: int | None = None,
+    end_year: int | None = None,
+    limit: int = 100,
+) -> pd.DataFrame:
+    """检索独立中国电影扩展库，全部筛选均为字面匹配。"""
+    if not 1 <= int(limit) <= 500:
+        raise ValueError("搜索结果上限必须位于1至500")
+    movies = get_chinese_movies().copy()
+    clean_query = str(query).strip()
+    if clean_query:
+        searchable = (
+            movies["title_zh"].fillna("") + " "
+            + movies["title_en"].fillna("") + " "
+            + movies["overview_zh"].fillna("")
+        )
+        movies = movies[searchable.str.contains(clean_query, case=False, regex=False, na=False)]
+    if origin and origin != "全部":
+        movies = movies[
+            movies["origin"].fillna("").str.split("|").map(lambda values: origin in values)
+        ]
+    if genre and genre != "全部":
+        movies = movies[
+            movies["genres"].fillna("").str.split("|").map(lambda values: genre in values)
+        ]
+    if start_year is not None:
+        movies = movies[movies["release_year"] >= int(start_year)]
+    if end_year is not None:
+        movies = movies[movies["release_year"] <= int(end_year)]
+    return movies.sort_values(
+        ["release_year", "title_zh"], ascending=[False, True]
+    ).head(limit).reset_index(drop=True)
+
+
+def chinese_catalog_facets() -> tuple[list[str], list[str]]:
+    """返回扩展库的地区与类型筛选项。"""
+    movies = get_chinese_movies()
+    origins = sorted({value for text in movies["origin"] for value in str(text).split("|") if value})
+    genres = sorted({value for text in movies["genres"] for value in str(text).split("|") if value})
+    return origins, genres
 
 
 def get_reference_timestamp(user_id: int, train: pd.DataFrame | None = None) -> int:

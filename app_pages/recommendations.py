@@ -46,7 +46,8 @@ if recommendations.empty:
 for rank, row in enumerate(recommendations.itertuples(index=False), start=1):
     with st.container(border=True):
         title_col, score_col = st.columns([4, 1])
-        title_col.subheader(f"{rank}. {row.title}")
+        shown_title = getattr(row, "display_title", row.title)
+        title_col.subheader(f"{rank}. {shown_title}")
         title_col.caption(f"{row.genres} · {row.release_year if not str(row.release_year) == '<NA>' else '年份未知'} · 训练期评分 {row.rating_count} 条")
         score_col.metric("综合分", f"{row.final_score:.2f}", help=f"MLP预测 {row.mlp_prediction:.2f}")
         st.markdown("**推荐理由**")
@@ -65,5 +66,5 @@ for rank, row in enumerate(recommendations.itertuples(index=False), start=1):
                     profile_key, user_id, int(row.movie_id), status,
                     feedback=feedback, predicted_rating=float(row.mlp_prediction),
                 )
-                st.toast(f"已保存：{row.title} · {label}")
+                st.toast(f"已保存：{shown_title} · {label}")
                 st.rerun()

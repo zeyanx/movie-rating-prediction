@@ -44,7 +44,8 @@ def valid_external_url(value: object) -> bool:
 
 
 def format_movie_option(row) -> str:
-    return f"{row['title']} · ID {int(row['movie_id'])}"
+    title = row.get("display_title", row["title"])
+    return f"{title} · ID {int(row['movie_id'])}"
 
 
 def page_intro(title: str, caption: str) -> None:

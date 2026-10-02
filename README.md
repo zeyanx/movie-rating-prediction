@@ -428,3 +428,22 @@ Streamlit Community Cloud入口为 `app.py`，公开应用为 <https://mccr78dsn
 用户观影与反馈保存在 `data/app/movie_app.db`。该数据库仅用于本地/课程演示，Streamlit Cloud重新部署、休眠恢复或实例迁移时可能丢失；真实生产应用应改用带认证的外部持久数据库。
 
 论文与最终答辩材料见 `docs/`，兼容旧目录的答辩草稿见 `defense/`，部署证据、真实云端截图与验收结果见 `reports/stage7/`。仓库地址、在线地址和已验收提交记录在 `configs/stage7_deployment.json`。
+
+## 中文电影数据库增强
+
+系统包含两类边界清晰的中文电影资料：
+
+1. `data/catalog/movie_localizations.csv` 为80部高频MovieLens影片提供中文片名和常用别名。中文字段只参与搜索与显示，影片仍使用原`movie_id`，因此不会改变模型输入、训练集、测试集或论文指标。
+2. `data/catalog/chinese_movies.csv` 提供48部中国电影基础目录，覆盖1934年至2024年。它们可按中英文片名、简介、地区、类型和年份检索，也可以加入想看、标记已看和记录个人评分。
+
+应用启动时会把两张CSV幂等同步到SQLite的`movie_localizations`、`chinese_movies`和`catalog_interactions`表。独立扩展库中没有MovieLens ID的影片会明确显示“冷启动”，不会输出没有训练依据的模型预测。
+
+继续扩充时可直接追加`chinese_movies.csv`，要求`catalog_id`唯一、年份为整数，并使用`|`分隔多个地区和类型。修改后运行：
+
+```powershell
+conda run -n movie python -m unittest tests.test_chinese_catalog -v
+conda run -n movie python -m unittest discover -s tests -p "test_stage6*.py" -v
+conda run -n movie python scripts/test_clean_deployment.py
+```
+
+基础目录的简介为课程项目原创概述，资料链接逐条保留在`source_url`；该目录用于检索和演示，不宣称完整收录全部华语电影，也不作为既有评分模型的训练数据。

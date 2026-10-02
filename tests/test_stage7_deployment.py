@@ -30,7 +30,11 @@ class DeploymentComplianceTest(unittest.TestCase):
         self.assertTrue((ROOT / "conda/environment.yml").is_file())
 
     def test_required_assets_are_tracked_and_under_limit(self) -> None:
-        for relative in self.config["required_models"] + self.config["required_reports"]:
+        for relative in (
+            self.config["required_models"]
+            + self.config["required_reports"]
+            + self.config["required_catalogs"]
+        ):
             path = ROOT / relative
             self.assertTrue(path.is_file(), relative)
             self.assertIn(relative, self.tracked)
@@ -73,7 +77,10 @@ class DeploymentComplianceTest(unittest.TestCase):
         manifest = json.loads((ROOT / "reports/stage7/deployment_manifest.json").read_text(encoding="utf-8"))
         self.assertTrue(all(item["purpose"] for item in manifest["files"]))
         app = (ROOT / "app.py").read_text(encoding="utf-8")
-        for page in ["home.py", "movie_detail.py", "recommendations.py", "my_movies.py", "model_lab.py"]:
+        for page in [
+            "home.py", "movie_detail.py", "chinese_catalog.py",
+            "recommendations.py", "my_movies.py", "model_lab.py",
+        ]:
             self.assertIn(page, app)
 
 

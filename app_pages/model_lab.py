@@ -104,7 +104,7 @@ else:
     ids = movies["movie_id"].astype(int).tolist()
     movie_id = st.selectbox(
         "电影", ids,
-        format_func=lambda value: f"{movies.loc[movies['movie_id'] == value, 'title'].iloc[0]} · ID {value}",
+        format_func=lambda value: f"{movies.loc[movies['movie_id'] == value, 'display_title'].iloc[0]} · ID {value}",
         key="lab_movie_selector",
     )
     if st.button("运行四模型预测", type="primary"):

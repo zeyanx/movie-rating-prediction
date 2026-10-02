@@ -30,6 +30,9 @@ class Stage6AppTests(unittest.TestCase):
     def test_movie_detail(self) -> None:
         self._assert_page("app_pages/movie_detail.py", "电影详情")
 
+    def test_chinese_catalog(self) -> None:
+        self._assert_page("app_pages/chinese_catalog.py", "中文电影库")
+
     def test_recommendations(self) -> None:
         self._assert_page("app_pages/recommendations.py", "个性化推荐")
 

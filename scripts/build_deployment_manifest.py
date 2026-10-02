@@ -33,12 +33,14 @@ def git_files() -> set[str]:
 def main() -> int:
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
     required = ["app.py", "requirements.txt", "conda/environment.yml"]
-    required += config["required_models"] + config["required_reports"]
+    required += config["required_models"] + config["required_reports"] + config["required_catalogs"]
     tracked = git_files()
     purpose_by_path = {
         "app.py": "Streamlit唯一入口",
         "requirements.txt": "Streamlit Cloud CPU依赖",
         "conda/environment.yml": "Windows本地Conda复现环境",
+        "data/catalog/movie_localizations.csv": "MovieLens中文片名与别名索引",
+        "data/catalog/chinese_movies.csv": "独立中国电影扩展目录",
     }
     items = []
     for relative in required:

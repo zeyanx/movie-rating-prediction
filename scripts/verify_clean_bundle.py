@@ -13,7 +13,10 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from movie_rating.web.data_service import build_prediction_frame, load_raw_tables
+from movie_rating.web.data_service import (
+    build_prediction_frame, load_raw_tables, search_chinese_catalog, search_movies,
+)
+from movie_rating.web.database import get_chinese_movies, get_movie_localizations
 from movie_rating.web.model_service import predict_with_models
 from movie_rating.web.recommendation import recommend_movies
 from movie_rating.web.runtime_assets import ensure_runtime_assets
@@ -24,6 +27,14 @@ def main() -> int:
     ratings, movies, users = load_raw_tables()
     if (len(ratings), len(users), len(movies)) != (100_000, 943, 1_682):
         raise AssertionError("首次启动生成的数据规模异常")
+    localizations = get_movie_localizations()
+    chinese_catalog = get_chinese_movies()
+    if (len(localizations), len(chinese_catalog)) != (80, 48):
+        raise AssertionError("中文电影资料层规模异常")
+    if search_movies("玩具总动员", limit=10)["movie_id"].astype(int).tolist() != [1]:
+        raise AssertionError("MovieLens中文检索失败")
+    if search_chinese_catalog("流浪地球", limit=10).iloc[0]["catalog_id"] != "cn034":
+        raise AssertionError("中国电影扩展库检索失败")
     frame = build_prediction_frame(1, [1, 2, 3])
     predictions = predict_with_models(
         frame, ["global_mean", "random_forest", "xgboost", "mlp"]
@@ -54,6 +65,8 @@ def main() -> int:
         },
         "recommendation_count": len(recommendations),
         "candidate_count": metadata["candidate_count"],
+        "movielens_localizations": len(localizations),
+        "chinese_catalog_movies": len(chinese_catalog),
         "app_test": "passed",
         "streamlit_health": "passed",
     }
