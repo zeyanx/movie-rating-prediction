@@ -6,16 +6,17 @@ import pandas as pd
 import streamlit as st
 
 from movie_rating.web.data_service import (
-    build_prediction_frame, chinese_catalog_facets, chinese_rated_facets,
-    load_chinese_rated_catalog, movie_statistics, search_chinese_catalog,
-    search_chinese_rated_catalog, search_movies,
+    build_prediction_frame, chinese_catalog_facets, movie_statistics,
+    search_chinese_catalog, search_movies,
+)
+from movie_rating.web.chinese_service import (
+    chinese_rated_facets, load_cached_chinese_models, load_chinese_rated_catalog,
+    predict_chinese_ratings, search_chinese_rated_catalog,
 )
 from movie_rating.web.database import (
     get_catalog_interactions, upsert_catalog_interaction,
 )
-from movie_rating.web.model_service import (
-    load_cached_chinese_models, predict_chinese_ratings, predict_with_mlp,
-)
+from movie_rating.web.model_service import predict_with_mlp
 from movie_rating.web.ui import ensure_session_state, page_intro, valid_external_url
 
 
