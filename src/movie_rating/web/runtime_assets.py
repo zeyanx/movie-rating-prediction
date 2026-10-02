@@ -68,6 +68,12 @@ def download_official_file(url: str, destination: Path, timeout: float = 60.0) -
         with urllib.request.urlopen(request, timeout=timeout) as response:
             with temporary.open("wb") as output:
                 shutil.copyfileobj(response, output)
+            # 少数网络代理会在未抛异常时提前截断响应，必须核对Content-Length。
+            expected_length = response.headers.get("Content-Length")
+            if expected_length is not None and temporary.stat().st_size != int(expected_length):
+                raise OSError(
+                    f"下载长度异常：{temporary.stat().st_size} != {expected_length}"
+                )
         os.replace(temporary, destination)
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
         temporary.unlink(missing_ok=True)
@@ -219,12 +225,40 @@ def ensure_raw_data(
             shutil.copy2(supplied, archive)
         if not md5_file.exists():
             md5_file.write_text(f"{OFFICIAL_MD5}  ml-100k.zip\n", encoding="ascii")
+        expected = read_expected_md5(md5_file)
+        actual = verify_archive_md5(archive, expected)
     else:
         download_official_file(MD5_URL, md5_file, timeout)
-        if not archive.exists():
-            download_official_file(DATASET_URL, archive, timeout)
-    expected = read_expected_md5(md5_file)
-    actual = verify_archive_md5(archive, expected)
+        expected = read_expected_md5(md5_file)
+        # 官方服务器或中间网络偶尔会提前结束大文件响应；每次都做MD5，
+        # 失败时仅从同一官方URL重试，绝不接受未知镜像或损坏文件。
+        actual = ""
+        last_error: Exception | None = None
+        for attempt in range(1, 4):
+            if archive.exists():
+                try:
+                    actual = verify_archive_md5(archive, expected)
+                    break
+                except ValueError as exc:
+                    last_error = exc
+                    archive.unlink(missing_ok=True)
+            try:
+                download_official_file(DATASET_URL, archive, timeout)
+            except RuntimeError as exc:
+                last_error = exc
+                if attempt == 3:
+                    raise RuntimeError("官方MovieLens ZIP连续3次下载失败，请稍后重试") from exc
+                continue
+            try:
+                actual = verify_archive_md5(archive, expected)
+                break
+            except ValueError as exc:
+                last_error = exc
+                archive.unlink(missing_ok=True)
+                if attempt == 3:
+                    raise RuntimeError("官方MovieLens ZIP连续3次MD5校验失败，请稍后重试") from exc
+        if not actual:
+            raise RuntimeError("未能获得校验通过的官方MovieLens ZIP") from last_error
     extracted = safe_extract_zip(archive, external)
     convert_official_files(extracted, raw_dir, actual)
     if not _raw_data_valid(target_root):

@@ -2,11 +2,19 @@
   "stage": 7,
   "entrypoint": "app.py",
   "python_version": "3.10",
+  "cloud_python_version": "3.11",
+  "cloud_python_reason": "2026-10-01部署界面仅提供3.11至3.14；3.10本地环境继续作为论文复现环境",
+  "runtime_dataset_source": "official_grouplens",
+  "runtime_dataset_url": "https://files.grouplens.org/datasets/movielens/ml-100k.zip",
   "official_dataset_url": "https://files.grouplens.org/datasets/movielens/ml-100k.zip",
   "official_dataset_md5": "0e33842e24a9c977be4e0107933c0723",
   "runtime_data_policy": "应用首次启动时从GroupLens官方地址下载、校验并转换；原始数据不纳入公开仓库",
-  "repository_url": null,
-  "streamlit_cloud_url": null,
+  "feedback_backend": "sqlite_ephemeral_on_community_cloud",
+  "deployment_branch": "main",
+  "deployment_commit": "4cb26a8",
+  "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
+  "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
+  "streamlit_cloud_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
   "required_models": [
     "models/global_mean_baseline.joblib",
     "models/stage3/random_forest.joblib",
@@ -33,6 +41,16 @@
     "data/processed/train_ratings.csv",
     "data/processed/test_ratings.csv",
     "data/app/movie_app.db"
+  ],
+  "excluded_license_sensitive_files": [
+    "data/external/",
+    "data/raw/ratings.csv",
+    "data/raw/movies.csv",
+    "data/raw/users.csv",
+    "data/processed/train_ratings.csv",
+    "data/processed/test_ratings.csv",
+    "reports/**/test_predictions.csv",
+    "reports/stage5/unified_test_predictions.csv"
   ],
   "git_lfs_paths": ["models/stage3/random_forest.joblib"]
 }

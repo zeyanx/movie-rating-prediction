@@ -10,6 +10,38 @@
 
 **关键词：** 电影评分预测；集成学习；随机森林；XGBoost；多层感知机；个性化推荐；Streamlit
 
+## Comparative Study of Movie Rating Prediction Based on Ensemble Learning and Neural Networks
+
+### Abstract
+
+This project establishes a reproducible movie-rating prediction pipeline on MovieLens 100K and compares a global-mean baseline, Random Forest, AdaBoost, XGBoost, and a PyTorch embedding-based multilayer perceptron under the same stratified 80/20 split. All historical aggregate features are fitted using the 80,000 training interactions only, while the 20,000 held-out interactions are reserved for final evaluation. The MLP achieves the best test performance with an RMSE of 0.9290, an MAE of 0.7333, and an R² of 0.3189. Paired bootstrap analysis with 2,000 resamples further supports its advantage over the three ensemble models on this test set. A five-page Streamlit application provides movie search, rating prediction, reasoned Top-N recommendations, viewing records, feedback, and an experiment dashboard. To respect the MovieLens license, the public repository does not redistribute rating data; the cloud application downloads and verifies the official archive at first startup. The results apply only to the dataset, split, and models evaluated here and should not be interpreted as online ranking or click-through improvements.
+
+**Keywords:** movie rating prediction; ensemble learning; Random Forest; XGBoost; multilayer perceptron; recommender system; Streamlit
+
+> 格式待按学校论文模板调整：封面、页眉页脚、目录、字号、参考文献悬挂缩进和英文摘要分页。
+
+## 相关技术与理论补充
+
+随机森林通过样本和特征双重随机性降低树模型方差；AdaBoost.R2 通过调整样本权重组合弱回归器；XGBoost 在加法树目标中加入模型复杂度正则项。PyTorch MLP 使用 Embedding 将高基数离散 ID 映射到连续潜在空间，再与显式属性拼接。五折交叉验证仅在训练集内执行：训练数据分为五份，每轮使用四份拟合、一份验证，最终汇总五轮 RMSE；固定测试集不参与超参数选择。
+
+全局均值预测为：
+
+$$\hat r_{ui}=\mu_{train}=\frac{1}{|\mathcal D_{train}|}\sum_{(u,i)\in\mathcal D_{train}}r_{ui}$$
+
+贝叶斯平滑电影口碑采用：
+
+$$B_i=\frac{n_i\bar r_i+m\mu}{n_i+m}$$
+
+其中 $n_i$ 为电影训练期评分数，$\bar r_i$ 为电影均分，$\mu$ 为训练集总体均值，$m$ 为先验强度。网页最终推荐分为：
+
+$$S_{ui}=0.85\hat r^{MLP}_{ui}+0.10G_{ui}+0.05B_i$$
+
+其中 $G_{ui}$ 是用户类型偏好得分。MLP 原始输出经约束映射到评分范围：
+
+$$\hat r^{MLP}_{ui}=1+4\,\sigma(z_{ui})$$
+
+该输出约束避免预测超出 1～5，但不会自动解决极端评分向均值收缩的问题。
+
 ## 1 绪论
 
 ### 1.1 研究背景与意义

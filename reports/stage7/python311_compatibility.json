@@ -1,7 +1,7 @@
 {
-  "verified_at": "2026-10-02T07:09:39.683372+00:00",
-  "python": "C:\\Users\\XUSITIAN\\.conda\\envs\\movie\\python.exe",
-  "environment_test": "复用当前Python 3.10环境",
+  "verified_at": "2026-10-02T07:05:59.735320+00:00",
+  "python": "C:\\Users\\XUSITIAN\\Documents\\Codex\\2026-10-01\\streamlit-windows-pycharm-anaconda-miniconda-movie\\.venv-stage7-py311\\python.exe",
+  "environment_test": "复用当前Python 3.11环境",
   "source_data_in_bundle_before_start": false,
   "database_in_bundle_before_start": false,
   "result": "passed",

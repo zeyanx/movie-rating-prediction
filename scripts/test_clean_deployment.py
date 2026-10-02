@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RESULT = ROOT / "reports" / "stage7" / "clean_deployment_result.json"
+DEFAULT_RESULT = ROOT / "reports" / "stage7" / "clean_deployment_result.json"
 
 COPY_DIRS = ["app_pages", "src", ".streamlit", "configs"]
 COPY_FILES = ["app.py", "requirements.txt"]
@@ -59,13 +59,20 @@ def run(arguments: list[str], cwd: Path, timeout: int) -> subprocess.CompletedPr
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--with-venv", action="store_true", help="新建venv并按requirements安装依赖")
+    parser.add_argument(
+        "--result-path",
+        type=Path,
+        default=DEFAULT_RESULT,
+        help="验证结果JSON路径；相对路径按项目根目录解析",
+    )
     args = parser.parse_args()
+    result_path = args.result_path if args.result_path.is_absolute() else ROOT / args.result_path
     with tempfile.TemporaryDirectory(prefix="movie-stage7-") as directory:
         bundle = Path(directory) / "repo"
         bundle.mkdir()
         build_bundle(bundle)
         python = Path(sys.executable)
-        install_output = "复用当前已核验Python 3.10环境"
+        install_output = f"复用当前Python {sys.version_info.major}.{sys.version_info.minor}环境"
         if args.with_venv:
             # 使用被Git忽略的专用环境，便于失败修复后复验而不反复下载大型CPU依赖。
             environment_dir = ROOT / ".venv-stage7"
@@ -78,6 +85,9 @@ def main() -> int:
             if installed.returncode:
                 raise RuntimeError(f"干净环境依赖安装失败：\n{installed.stdout}\n{installed.stderr}")
             install_output = "新建venv并从requirements.txt安装成功"
+        dependency_check = run([str(python), "-m", "pip", "check"], bundle, 120)
+        if dependency_check.returncode:
+            raise RuntimeError(f"pip check失败：\n{dependency_check.stdout}\n{dependency_check.stderr}")
         verified = run([str(python), "scripts/verify_clean_bundle.py"], bundle, 300)
         if verified.returncode:
             raise RuntimeError(f"干净部署失败：\n{verified.stdout}\n{verified.stderr}")
@@ -90,10 +100,10 @@ def main() -> int:
             "result": "passed",
             "output_tail": verified.stdout[-4000:],
         }
-        RESULT.parent.mkdir(parents=True, exist_ok=True)
-        RESULT.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        result_path.parent.mkdir(parents=True, exist_ok=True)
+        result_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(verified.stdout)
-        print(f"干净部署结果：{RESULT.relative_to(ROOT)}")
+        print(f"干净部署结果：{result_path.relative_to(ROOT)}")
     return 0
 
 

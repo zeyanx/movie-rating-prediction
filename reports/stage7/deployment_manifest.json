@@ -1,5 +1,5 @@
 {
-  "created_at": "2026-10-01T11:24:24.936330+00:00",
+  "created_at": "2026-10-01T11:58:54.134474+00:00",
   "entrypoint": "app.py",
   "official_dataset_url": "https://files.grouplens.org/datasets/movielens/ml-100k.zip",
   "runtime_generated": [
@@ -17,7 +17,8 @@
       "sha256": "57f3def479e0d33be53be70910a353b6612efe502bd903f20122c07baad52ae7",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "Streamlit唯一入口"
     },
     {
       "path": "requirements.txt",
@@ -25,7 +26,8 @@
       "sha256": "a1bfe8fc6fc1019551d9b72dc2dcacfaed93733b688ebf39b3c0e2c3975e1da8",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "Streamlit Cloud CPU依赖"
     },
     {
       "path": "conda/environment.yml",
@@ -33,7 +35,8 @@
       "sha256": "229ff83c407aa005271c3635c0c0960dba9c7cb1b152bd58fef354e5689873c8",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "Windows本地Conda复现环境"
     },
     {
       "path": "models/global_mean_baseline.joblib",
@@ -41,7 +44,8 @@
       "sha256": "ea8a0efa33a7ac21f732d22d2e465a8719ec94cc6da5286b63eb022dec253a4c",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页推理模型"
     },
     {
       "path": "models/stage3/random_forest.joblib",
@@ -49,7 +53,8 @@
       "sha256": "8bb7cf6c0382036c126d2f46bb326583062e6055db4193092c895445bfdbff9b",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": true
+      "git_lfs_required": true,
+      "purpose": "网页推理模型"
     },
     {
       "path": "models/stage3/xgboost.joblib",
@@ -57,7 +62,8 @@
       "sha256": "9c7c6412d2709592dc6b86d1c35134c507a795c1f206227745744c3334b30ac3",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页推理模型"
     },
     {
       "path": "models/stage4/final_preprocessor.joblib",
@@ -65,7 +71,8 @@
       "sha256": "49ec2e13c0cc53e8557c312020fbdd8359a04dd7c6c32d45a558451ca8a48fe9",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页推理模型"
     },
     {
       "path": "models/stage4/mlp_final.pt",
@@ -73,7 +80,8 @@
       "sha256": "2ef5706b96df0eb7e4006e45aae31561775a221decbcd01a7c4f979779fe9bb0",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页推理模型"
     },
     {
       "path": "models/stage4/model_metadata.json",
@@ -81,7 +89,8 @@
       "sha256": "627edcbf10ce2008c6d3e8f1564982d7aff28d4e688b42fb72f9cbf4ccf5bfcb",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页推理模型"
     },
     {
       "path": "reports/stage5/metrics_comparison.csv",
@@ -89,7 +98,8 @@
       "sha256": "e099ee0804c4daa1f8de8d9dbdc6c2c7949539218efc6c200d7c09f887d86686",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
     },
     {
       "path": "reports/stage5/efficiency_benchmark.csv",
@@ -97,7 +107,8 @@
       "sha256": "18209a750a72e9ee09c3ea1cff54d54f942dc756f84e62e9afd3fac3d449ce34",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
     },
     {
       "path": "reports/stage5/paired_bootstrap_summary.csv",
@@ -105,7 +116,8 @@
       "sha256": "7792f13bfd7eb95edf0ed72356111d5c161b3699914361518b7f3db2dddf7072",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
     },
     {
       "path": "reports/stage5/ensemble_group_importance.csv",
@@ -113,7 +125,8 @@
       "sha256": "31cf955a2cb62a8199c78145d26b2837a3c8a18c1a3023d559263ed922a552b1",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
     },
     {
       "path": "reports/stage5/mlp_permutation_importance.csv",
@@ -121,7 +134,8 @@
       "sha256": "3b7cfe894c1fd49984a818f09a0e2fa02ae08a3580a9988c2e67c1b8cfa872d7",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
     },
     {
       "path": "reports/stage5/segment_metrics.csv",
@@ -129,7 +143,8 @@
       "sha256": "78e0dcc34942b7cc7b8feb434bee0844eb7c6d46733983a759aa40857c3839d0",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
     },
     {
       "path": "reports/stage5/residual_summary.csv",
@@ -137,7 +152,8 @@
       "sha256": "055c347f197afa43d76e7925790153a4bbaea8bb2ce19cd5fbe94f9241fda545",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
     },
     {
       "path": "reports/stage5/actual_rating_diagnostics.csv",
@@ -145,7 +161,8 @@
       "sha256": "7067980d2353785fa05b1a688286b8b56a752044b166653ba5e6f570445fa521",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
     },
     {
       "path": "reports/stage5/model_recommendation.json",
@@ -153,7 +170,8 @@
       "sha256": "c31888bb52cee82997c77d5bcb65e855e0b9a6710ed32cc5f367db97e7ffd7fb",
       "should_be_tracked": true,
       "git_tracked": true,
-      "git_lfs_required": false
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
     }
   ],
   "total_bytes": 41016901

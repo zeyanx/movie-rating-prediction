@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 import zipfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 
@@ -16,7 +17,8 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from movie_rating.web.runtime_assets import (
-    OFFICIAL_MD5, calculate_md5, ensure_runtime_assets, safe_extract_zip,
+    GENRE_NAMES, OFFICIAL_MD5, calculate_md5, ensure_runtime_assets,
+    safe_extract_zip, verify_archive_md5,
 )
 
 
@@ -38,6 +40,19 @@ class RuntimeAssetsTest(unittest.TestCase):
             second = ensure_runtime_assets(target, archive_path=source)
             self.assertFalse(second["raw"]["downloaded"])
             self.assertFalse(second["split"]["generated"])
+            movies = __import__("pandas").read_csv(target / "data/raw/movies.csv")
+            genre_union = set().union(*(str(value).split("|") for value in movies["genres"]))
+            self.assertEqual(genre_union, set(GENRE_NAMES))
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                repeated = list(pool.map(lambda _: ensure_runtime_assets(target, archive_path=source), range(2)))
+            self.assertTrue(all(item["verification"]["ratings"] == 100_000 for item in repeated))
+
+    def test_wrong_md5_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            bad = Path(directory) / "bad.zip"
+            bad.write_bytes(b"not the official archive")
+            with self.assertRaises(ValueError):
+                verify_archive_md5(bad)
 
     def test_zip_path_traversal_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

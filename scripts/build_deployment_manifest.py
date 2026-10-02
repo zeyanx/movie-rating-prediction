@@ -35,6 +35,11 @@ def main() -> int:
     required = ["app.py", "requirements.txt", "conda/environment.yml"]
     required += config["required_models"] + config["required_reports"]
     tracked = git_files()
+    purpose_by_path = {
+        "app.py": "Streamlit唯一入口",
+        "requirements.txt": "Streamlit Cloud CPU依赖",
+        "conda/environment.yml": "Windows本地Conda复现环境",
+    }
     items = []
     for relative in required:
         path = ROOT / relative
@@ -47,6 +52,10 @@ def main() -> int:
             "should_be_tracked": True,
             "git_tracked": relative in tracked,
             "git_lfs_required": relative in config["git_lfs_paths"],
+            "purpose": purpose_by_path.get(
+                relative,
+                "网页推理模型" if relative.startswith("models/") else "网页聚合实验报告",
+            ),
         })
     payload = {
         "created_at": datetime.now(timezone.utc).isoformat(),

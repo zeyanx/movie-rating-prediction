@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from movie_rating.web.data_service import build_prediction_frame, load_raw_tables
-from movie_rating.web.model_service import predict_with_mlp
+from movie_rating.web.model_service import predict_with_models
 from movie_rating.web.recommendation import recommend_movies
 from movie_rating.web.runtime_assets import ensure_runtime_assets
 
@@ -24,9 +24,12 @@ def main() -> int:
     ratings, movies, users = load_raw_tables()
     if (len(ratings), len(users), len(movies)) != (100_000, 943, 1_682):
         raise AssertionError("首次启动生成的数据规模异常")
-    predictions = predict_with_mlp(build_prediction_frame(1, [1, 2, 3]))
-    if len(predictions) != 3 or not np.isfinite(predictions).all():
-        raise AssertionError("干净副本MLP推理失败")
+    frame = build_prediction_frame(1, [1, 2, 3])
+    predictions = predict_with_models(
+        frame, ["global_mean", "random_forest", "xgboost", "mlp"]
+    )
+    if predictions.shape != (3, 4) or not np.isfinite(predictions.to_numpy()).all():
+        raise AssertionError("干净副本四模型推理失败")
     recommendations, metadata = recommend_movies(1, top_n=5)
     if len(recommendations) != 5 or not recommendations["reasons"].map(lambda x: len(x) >= 2).all():
         raise AssertionError("干净副本推荐或理由生成失败")
@@ -46,7 +49,9 @@ def main() -> int:
         raise AssertionError(f"干净副本健康检查失败：\n{health.stdout}\n{health.stderr}")
     payload = {
         "dataset": result["verification"],
-        "mlp_predictions": predictions.round(6).tolist(),
+        "model_predictions": {
+            name: predictions[name].round(6).tolist() for name in predictions.columns
+        },
         "recommendation_count": len(recommendations),
         "candidate_count": metadata["candidate_count"],
         "app_test": "passed",

@@ -23,6 +23,7 @@ data/raw/*.csv
 data/processed/*.csv
 reports/**/test_predictions.csv
 reports/stage5/unified_test_predictions.csv
+reports/**/*.html
 
 # 仅发布网页推理必需的模型，其余训练中间产物不进入部署仓库
 models/*
@@ -42,6 +43,7 @@ checkpoints/
 
 # 干净部署测试与本机临时环境
 .venv-stage7/
+.venv-stage7-py311/
 work/stage7-*/
 reports/stage7/screenshots/local-*.png
 

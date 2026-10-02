@@ -1,0 +1,45 @@
+{
+  "validated_at": "2026-10-02T14:56:17+08:00",
+  "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
+  "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
+  "verified_runtime_commit": "4cb26a8",
+  "cloud_python": "3.11",
+  "result": "passed",
+  "pages": [
+    {
+      "name": "首页",
+      "route": "/",
+      "checks": ["100000条评分", "943名用户", "1682部电影", "模型指标表和个性化推荐可见"],
+      "screenshot": "reports/stage7/screenshots/01_home.png"
+    },
+    {
+      "name": "电影详情",
+      "route": "/~/+/movie_detail",
+      "checks": ["Star Wars (1977)详情", "MLP预测4.54/5", "训练期统计和评分分布可见"],
+      "screenshot": "reports/stage7/screenshots/02_movie_detail.png"
+    },
+    {
+      "name": "个性化推荐",
+      "route": "/~/+/recommendations",
+      "checks": ["用户1 Top-10推荐", "每部电影显示多条中文推荐理由", "候选过滤说明可见"],
+      "screenshot": "reports/stage7/screenshots/03_recommendations.png"
+    },
+    {
+      "name": "我的观影",
+      "route": "/~/+/my_movies",
+      "checks": ["训练期历史可见", "在线想看记录写入后计数为1", "云端SQLite临时性提示可见"],
+      "screenshot": "reports/stage7/screenshots/04_my_movies.png"
+    },
+    {
+      "name": "模型实验室",
+      "route": "/~/+/model_lab",
+      "checks": ["五模型统一测试集指标可见", "MLP最低RMSE为0.9290", "四模型在线推理已执行且无错误"],
+      "screenshot": "reports/stage7/screenshots/05_model_lab.png"
+    }
+  ],
+  "feedback_check": {
+    "action": "将Casablanca (1942)加入想看",
+    "immediate_readback": true,
+    "durability_note": "Community Cloud本地SQLite不保证跨重启、休眠或重新部署持久化"
+  }
+}

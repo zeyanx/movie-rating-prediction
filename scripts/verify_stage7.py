@@ -33,22 +33,38 @@ def main() -> int:
         require((ROOT / relative).is_file(), f"部署必需文件缺失：{relative}")
     for relative in [
         "docs/thesis_draft.md", "docs/thesis_figures_and_tables.md", "docs/references.md",
+        "docs/defense_slides_outline.md", "docs/defense_script.md", "docs/defense_q_and_a.md",
+        "docs/live_demo_runbook.md", "docs/final_project_checklist.md",
         "defense/presentation_outline.md", "defense/speech_script.md", "defense/demo_script.md",
         "defense/qa_preparation.md", "defense/final_checklist.md",
         "reports/stage7/deployment_manifest.json", "reports/stage7/clean_deployment_result.json",
+        "reports/stage7/python311_compatibility.json", "reports/stage7/online_validation.json",
+        "reports/stage7/deployment_summary.md",
     ]:
         require((ROOT / relative).is_file() and (ROOT / relative).stat().st_size > 0, f"缺少材料：{relative}")
+    for name in ["01_home.png", "02_movie_detail.png", "03_recommendations.png",
+                 "04_my_movies.png", "05_model_lab.png"]:
+        screenshot = ROOT / "reports/stage7/screenshots" / name
+        require(screenshot.is_file() and screenshot.stat().st_size > 20_000, f"云端截图无效：{name}")
     ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
     for token in ["data/raw/*.csv", "data/processed/*.csv", "data/app/*.db", ".streamlit/secrets.toml"]:
         require(token in ignore, f"忽略规则缺少：{token}")
     app_source = (ROOT / "app.py").read_text(encoding="utf-8")
     require("ensure_runtime_assets_cached" in app_source, "入口未配置官方数据首次启动")
+    checked([sys.executable, "-m", "pip", "check"], "依赖一致性")
     checked([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_stage7*.py", "-v"], "第7阶段单元测试")
     checked([sys.executable, "scripts/verify_stage6.py"], "第6阶段回归")
     result = json.loads((ROOT / "reports/stage7/clean_deployment_result.json").read_text(encoding="utf-8"))
     require(result["result"] == "passed", "干净部署证据不是passed")
-    print("外部部署状态：" + (config["streamlit_cloud_url"] or "尚未部署（等待GitHub仓库与Streamlit账户授权）"))
-    print("第7阶段本地部署验收通过")
+    py311 = json.loads((ROOT / "reports/stage7/python311_compatibility.json").read_text(encoding="utf-8"))
+    require(py311["result"] == "passed", "Python 3.11云端兼容验证未通过")
+    online = json.loads((ROOT / "reports/stage7/online_validation.json").read_text(encoding="utf-8"))
+    require(online["result"] == "passed" and len(online["pages"]) == 5, "线上五页面验收未通过")
+    require(config["repository_url"].startswith("https://github.com/"), "GitHub仓库地址缺失")
+    require(config["streamlit_cloud_url"].startswith("https://"), "Streamlit在线地址缺失")
+    print("GitHub仓库：" + config["repository_url"])
+    print("Streamlit应用：" + config["streamlit_cloud_url"])
+    print("第7阶段验证通过")
     return 0
 
 
