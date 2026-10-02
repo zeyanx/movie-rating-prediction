@@ -1,4 +1,4 @@
-"""第6阶段独立验收：数据、推理、反馈、五页面与本地服务。"""
+"""第6阶段兼容验收：数据、推理、反馈、六页面与本地服务。"""
 
 from __future__ import annotations
 
@@ -128,7 +128,7 @@ def main() -> int:
 
     run_checked(
         [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_stage6*.py", "-v"],
-        "服务层与五页面AppTest", timeout=180,
+        "服务层与六页面AppTest", timeout=180,
     )
     run_checked([sys.executable, str(ROOT / "scripts" / "smoke_test_streamlit.py")], "Streamlit本地健康检查", timeout=60)
 

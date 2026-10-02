@@ -2,7 +2,7 @@
   "validated_at": "2026-10-02T14:56:17+08:00",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
   "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
-  "verified_runtime_commit": "4cb26a8",
+  "verified_runtime_commit": "6692b10",
   "cloud_python": "3.11",
   "result": "passed",
   "pages": [
@@ -17,6 +17,12 @@
       "route": "/~/+/movie_detail",
       "checks": ["Star Wars (1977)详情", "MLP预测4.54/5", "训练期统计和评分分布可见"],
       "screenshot": "reports/stage7/screenshots/02_movie_detail.png"
+    },
+    {
+      "name": "中文电影库",
+      "route": "/~/+/chinese_catalog",
+      "checks": ["80部MovieLens中文片名可检索", "48部中国电影扩展目录可筛选", "冷启动边界提示可见", "扩展电影想看记录可写入并读回"],
+      "screenshot": "reports/stage7/screenshots/06_chinese_catalog.png"
     },
     {
       "name": "个性化推荐",

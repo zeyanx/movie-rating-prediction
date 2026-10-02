@@ -12,7 +12,7 @@
   "feedback_backend": "sqlite_ephemeral_on_community_cloud",
   "chinese_catalog_policy": "80条MovieLens中文片名映射用于检索展示；48条独立中国电影基础目录用于冷启动浏览和个人记录，不进入既有模型训练",
   "deployment_branch": "main",
-  "deployment_commit": "4cb26a8",
+  "deployment_commit": "6692b10",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
   "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
   "streamlit_cloud_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",

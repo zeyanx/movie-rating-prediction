@@ -43,7 +43,7 @@ def main() -> int:
     ]:
         require((ROOT / relative).is_file() and (ROOT / relative).stat().st_size > 0, f"缺少材料：{relative}")
     for name in ["01_home.png", "02_movie_detail.png", "03_recommendations.png",
-                 "04_my_movies.png", "05_model_lab.png"]:
+                 "04_my_movies.png", "05_model_lab.png", "06_chinese_catalog.png"]:
         screenshot = ROOT / "reports/stage7/screenshots" / name
         require(screenshot.is_file() and screenshot.stat().st_size > 20_000, f"云端截图无效：{name}")
     ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
@@ -54,7 +54,7 @@ def main() -> int:
     checked([sys.executable, "-m", "pip", "check"], "依赖一致性")
     checked([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_stage7*.py", "-v"], "第7阶段单元测试")
     # 公开仓库按许可与隐私边界排除了逐行测试预测文件，因此干净克隆不能
-    # 调用依赖这些历史产物的verify_stage2/verify_stage5链。改用覆盖五页面、
+    # 调用依赖这些历史产物的verify_stage2/verify_stage5链。改用覆盖六页面、
     # 推理、推荐、数据库和数据服务的第6阶段部署安全回归测试。
     checked(
         [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_stage6*.py", "-v"],
@@ -65,7 +65,7 @@ def main() -> int:
     py311 = json.loads((ROOT / "reports/stage7/python311_compatibility.json").read_text(encoding="utf-8"))
     require(py311["result"] == "passed", "Python 3.11云端兼容验证未通过")
     online = json.loads((ROOT / "reports/stage7/online_validation.json").read_text(encoding="utf-8"))
-    require(online["result"] == "passed" and len(online["pages"]) == 5, "线上五页面验收未通过")
+    require(online["result"] == "passed" and len(online["pages"]) == 6, "线上六页面验收未通过")
     require(config["repository_url"].startswith("https://github.com/"), "GitHub仓库地址缺失")
     require(config["streamlit_cloud_url"].startswith("https://"), "Streamlit在线地址缺失")
     print("GitHub仓库：" + config["repository_url"])

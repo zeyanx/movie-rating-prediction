@@ -2,7 +2,7 @@
 
 本项目使用 MovieLens 100K 数据，对集成学习与神经网络评分预测方法进行对比，并提供可公开访问的 Streamlit 电影评分预测和个性化推荐系统。
 
-第1至第7阶段均已完成：数据治理、固定划分、基线、集成学习、PyTorch MLP、统一实验、五页面网页、公开部署、论文与答辩材料均已验收。
+第1至第7阶段均已完成：数据治理、固定划分、基线、集成学习、PyTorch MLP、统一实验、六页面网页、公开部署、论文与答辩材料均已验收。
 
 - GitHub：<https://github.com/zeyanx/movie-rating-prediction>
 - 在线应用：<https://mccr78dsncofymbfxhdwfo.streamlit.app/>
@@ -421,7 +421,7 @@ python scripts/verify_stage7.py
 
 Streamlit Community Cloud入口为 `app.py`，公开应用为 <https://mccr78dsncofymbfxhdwfo.streamlit.app/>。根目录只保留一个 `requirements.txt`，Conda复现实验文件位于 `conda/environment.yml`。首次云端冷启动需要访问 `files.grouplens.org`；若下载失败，应查看云端日志并重试，不要使用来源不明的镜像。
 
-本地实验严格使用Python 3.10。2026-10-01部署时Community Cloud界面只提供Python 3.11至3.14，因此线上选择3.11，并额外在干净Python 3.11环境完成依赖安装、四模型推理、推荐、五页面AppTest和健康检查。
+本地实验严格使用Python 3.10。2026-10-01部署时Community Cloud界面只提供Python 3.11至3.14，因此线上选择3.11，并额外在干净Python 3.11环境完成依赖安装、四模型推理、推荐、六页面AppTest和健康检查。
 
 随机森林模型约38 MB，通过Git LFS跟踪。推送前运行 `git lfs install` 和 `git lfs track models/stage3/random_forest.joblib`，并确认远程仓库实际包含LFS对象。模型和数据读取使用Streamlit缓存。
 
