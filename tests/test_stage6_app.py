@@ -25,13 +25,13 @@ class Stage6AppTests(unittest.TestCase):
 
     def test_home(self) -> None:
         self.assertEqual(len(self.app.exception), 0, [item.value for item in self.app.exception])
-        self.assertIn("MovieLens 智能评分与推荐系统", [item.value for item in self.app.title])
+        self.assertIn("智能电影评分与推荐系统", [item.value for item in self.app.title])
 
     def test_movie_detail(self) -> None:
-        self._assert_page("app_pages/movie_detail.py", "电影详情")
+        self._assert_page("app_pages/movie_detail.py", "评分预测")
 
     def test_chinese_catalog(self) -> None:
-        self._assert_page("app_pages/chinese_catalog.py", "中文电影库")
+        self._assert_page("app_pages/chinese_catalog.py", "电影库")
 
     def test_recommendations(self) -> None:
         self._assert_page("app_pages/recommendations.py", "个性化推荐")
@@ -40,7 +40,7 @@ class Stage6AppTests(unittest.TestCase):
         self._assert_page("app_pages/my_movies.py", "我的观影")
 
     def test_model_lab(self) -> None:
-        self._assert_page("app_pages/model_lab.py", "模型实验室")
+        self._assert_page("app_pages/model_lab.py", "模型分析")
 
 
 if __name__ == "__main__":

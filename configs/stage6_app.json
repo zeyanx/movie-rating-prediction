@@ -1,5 +1,5 @@
 {
-  "app_title": "MovieLens 智能评分与推荐系统",
+  "app_title": "智能电影评分与推荐系统",
   "default_user_id": 1,
   "default_model": "mlp",
   "fallback_model": "global_mean",

@@ -12,9 +12,9 @@ from .config import load_app_config
 MODEL_LABELS = {
     "global_mean": "全局均值",
     "random_forest": "随机森林",
-    "adaboost": "AdaBoost",
-    "xgboost": "XGBoost",
-    "mlp": "MLP",
+    "adaboost": "自适应提升",
+    "xgboost": "梯度提升树",
+    "mlp": "神经网络",
 }
 STATUS_LABELS = {"want_to_watch": "想看", "watched": "已看"}
 FEEDBACK_LABELS = {
@@ -54,4 +54,4 @@ def page_intro(title: str, caption: str) -> None:
 
 
 def show_interaction_notice() -> None:
-    st.info("当前用户为 MovieLens 匿名编号，用于课程项目演示，不代表账号登录或身份认证。")
+    st.info("切换当前用户后，预测评分和推荐结果会同步更新。")

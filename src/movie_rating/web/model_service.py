@@ -143,7 +143,7 @@ def predict_chinese_ratings(
     metadata = loaded["metadata"]
     user_id = int(cn_user_id)
     if not 1 <= user_id <= int(metadata["num_users"]):
-        raise ValueError(f"中国电影演示用户必须位于1至{metadata['num_users']}")
+        raise ValueError(f"中国电影用户编号必须位于1至{metadata['num_users']}")
     movie_ids = np.asarray(movie_indices, dtype=np.int64).reshape(-1)
     if movie_ids.size == 0:
         return pd.DataFrame(columns=list(model_names))

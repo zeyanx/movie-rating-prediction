@@ -354,15 +354,16 @@ reports/stage5/stage5_summary.md               阶段总结
 
 ## 11. 第6阶段：Streamlit多页面电影评分与推荐系统
 
-应用入口为`app.py`，使用`st.Page`与`st.navigation`注册首页、电影详情、个性化推荐、我的观影和模型实验室。侧边栏选择的是MovieLens匿名用户编号，仅用于课程项目演示，不是账号登录或身份认证。
+应用入口为`app.py`，使用`st.Page`与`st.navigation`注册首页、电影库、评分预测、个性化推荐、我的观影和模型分析。侧边栏通过统一用户编号切换预测与推荐结果。
 
 ### 11.1 主要功能
 
-- 首页：数据规模、五模型指标、系统健康、快速搜索和推荐预览；
-- 电影详情：标题/类型/年份检索、训练期评分分布、MLP预测、按需多模型比较和反馈表单；
-- 个性化推荐：批量MLP预测、类型偏好、贝叶斯热度、稳定Top-N排序和每项至少两条理由；
+- 首页：统一电影规模、模型指标、系统状态、中文搜索和混合推荐预览；
+- 电影库：合并300部中国电影和80部具有中文译名的其他国家电影，统一检索、筛选和评分；
+- 评分预测：自动按影片来源选择对应模型，显示中文模型名称、多模型评分和预测依据；
+- 个性化推荐：中国电影与其他国家电影混合排序，并为每部电影提供至少两条理由；
 - 我的观影：区分固定训练期历史与网页SQLite记录，支持编辑、二次确认删除和内存CSV下载；
-- 模型实验室：展示第5阶段指标、效率、Bootstrap、特征重要性、分段误差和即时多模型预测。
+- 模型分析：展示模型指标、运行效率、自助法检验、特征重要性、分段误差和即时多模型预测。
 
 推荐只用固定训练集计算用户画像和电影热度，不读取固定测试集真实评分：
 
@@ -405,7 +406,7 @@ python -m streamlit run app.py --server.port 8502
 | 8501端口占用 | 使用`--server.port 8502`或先关闭旧Streamlit进程 |
 | 网页预测时间特征异常 | 不得用当前时间；系统使用用户训练期最新时间戳或训练集最大时间戳 |
 
-SQLite本地文件适合课程演示，但Streamlit Community Cloud文件系统是临时性的；在线反馈在重启、休眠或重新部署后可能丢失。
+Streamlit Community Cloud文件系统是临时性的；在线反馈在重启、休眠或重新部署后可能丢失。
 # 第7阶段：公开部署、论文与答辩材料
 
 本阶段把第6阶段网页整理为可部署包。公开仓库**不包含** MovieLens 原始CSV、训练/测试逐行数据和SQLite反馈库；应用首次启动时从 [GroupLens官方地址](https://files.grouplens.org/datasets/movielens/ml-100k.zip) 下载ZIP，核对MD5并生成数据。这样既能复现实验，也避免未经许可重新分发MovieLens数据。
@@ -493,6 +494,6 @@ python scripts/build_chinese_ratings_dataset.py --archive D:\Downloads\ml-25m.zi
 | PyTorch MLP | 0.794466 | 0.596052 | 0.301255 |
 | 全局均值 | 0.954616 | 0.732787 | -0.008847 |
 
-训练模型位于`models/chinese/`，实验报告位于`reports/chinese_training/`。Streamlit“中文电影库 → 中国电影真实评分库”提供300部影片检索、独立用户选择、三模型评分预测和推荐依据；模型使用`st.cache_resource`加载。
+训练模型位于`models/chinese/`，实验报告位于`reports/chinese_training/`。网页“电影库”将300部中国电影与80部具有中文译名的其他国家电影合并展示，并按影片来源自动选择评分模型；“个性化推荐”会混排两类影片并输出中文推荐理由。模型使用`st.cache_resource`加载。
 
 MovieLens 25M原始包、评分子集和原始用户/影片ID均被`.gitignore`排除，不在公开仓库中再分发。公开的`data/catalog/chinese_rated_movies.csv`只包含Wikidata CC0字段以及本项目生成的内部模型索引。MovieLens 25M仅用于非商业课程研究，使用者须阅读GroupLens官方README、遵守不得擅自再分发等许可条件并在论文中致谢。

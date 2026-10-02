@@ -16,8 +16,7 @@ from movie_rating.web.ui import FEEDBACK_LABELS, STATUS_LABELS, ensure_session_s
 
 
 user_id, profile_key = ensure_session_state()
-page_intro("我的观影", "固定训练期历史与网页新增记录分开呈现；本地修改仅写入SQLite。")
-st.warning("云端SQLite不保证永久持久化：应用重启、休眠或重新构建后网页记录可能重置。")
+page_intro("我的观影", "集中查看历史评分、想看电影、已看电影和个人偏好。")
 
 history = get_user_history(user_id)
 local = get_interactions(profile_key)
@@ -36,7 +35,7 @@ c4.metric("已看", int((local.get("status", pd.Series(dtype=str)) == "watched")
 c5.metric("扩展库记录", len(catalog_local))
 
 history_tab, local_tab, catalog_tab, preference_tab = st.tabs(
-    ["训练期历史", "MovieLens网页记录", "中文扩展库记录", "类型偏好"]
+    ["历史评分", "我的电影", "中国电影记录", "类型偏好"]
 )
 with history_tab:
     if history.empty:
@@ -46,7 +45,7 @@ with history_tab:
         shown = history[history["rating"] >= min_rating]
         st.dataframe(
             shown[["movie_id", "display_title", "genres", "rating", "timestamp"]].rename(
-                columns={"display_title": "中英文片名"}
+                columns={"display_title": "电影名称"}
             ),
             hide_index=True, width="stretch", height=420,
         )
@@ -62,20 +61,20 @@ with local_tab:
         display["反馈"] = display["feedback"].map(FEEDBACK_LABELS)
         st.dataframe(
             display[["movie_id", "display_title", "genres", "状态", "personal_rating", "反馈", "note", "updated_at"]].rename(
-                columns={"display_title": "中英文片名"}
+                columns={"display_title": "电影名称"}
             ),
             hide_index=True, width="stretch", height=350,
         )
         st.download_button(
             "下载当前网页记录CSV",
             data=display.to_csv(index=False).encode("utf-8-sig"),
-            file_name=f"movielens_user_{user_id}_interactions.csv",
+            file_name=f"用户_{user_id}_观影记录.csv",
             mime="text/csv",
         )
 
         selected_movie = st.selectbox(
             "编辑记录", display["movie_id"].astype(int).tolist(),
-            format_func=lambda value: f"{display.loc[display['movie_id'] == value, 'display_title'].iloc[0]} · ID {value}",
+            format_func=lambda value: f"{display.loc[display['movie_id'] == value, 'display_title'].iloc[0]} · 编号 {value}",
             key="my_movies_edit_selector",
         )
         record = local[local["movie_id"] == int(selected_movie)].iloc[0]
@@ -106,16 +105,16 @@ with local_tab:
 
 with catalog_tab:
     if catalog_local.empty:
-        st.info("还没有扩展中国电影记录，可在“中文电影库”页面加入想看或标记已看。")
+        st.info("还没有中国电影记录，可在“电影库”页面浏览电影。")
     else:
         catalog_display = catalog_local.copy()
         catalog_display["状态"] = catalog_display["status"].map(STATUS_LABELS)
         st.dataframe(
             catalog_display[[
-                "catalog_id", "title_zh", "title_en", "release_year", "origin",
+                "catalog_id", "title_zh", "release_year", "origin",
                 "genres", "状态", "personal_rating", "note", "updated_at",
             ]].rename(columns={
-                "catalog_id": "目录ID", "title_zh": "中文片名", "title_en": "英文片名",
+                "catalog_id": "电影编号", "title_zh": "电影名称",
                 "release_year": "年份", "origin": "地区", "genres": "类型",
                 "personal_rating": "个人评分", "note": "备注", "updated_at": "更新时间",
             }),
