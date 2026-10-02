@@ -53,7 +53,13 @@ def main() -> int:
     require("ensure_runtime_assets_cached" in app_source, "入口未配置官方数据首次启动")
     checked([sys.executable, "-m", "pip", "check"], "依赖一致性")
     checked([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_stage7*.py", "-v"], "第7阶段单元测试")
-    checked([sys.executable, "scripts/verify_stage6.py"], "第6阶段回归")
+    # 公开仓库按许可与隐私边界排除了逐行测试预测文件，因此干净克隆不能
+    # 调用依赖这些历史产物的verify_stage2/verify_stage5链。改用覆盖五页面、
+    # 推理、推荐、数据库和数据服务的第6阶段部署安全回归测试。
+    checked(
+        [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_stage6*.py", "-v"],
+        "第6阶段部署安全回归",
+    )
     result = json.loads((ROOT / "reports/stage7/clean_deployment_result.json").read_text(encoding="utf-8"))
     require(result["result"] == "passed", "干净部署证据不是passed")
     py311 = json.loads((ROOT / "reports/stage7/python311_compatibility.json").read_text(encoding="utf-8"))
