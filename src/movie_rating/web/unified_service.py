@@ -69,6 +69,14 @@ def translate_genres(value: object) -> str:
     return "、".join(labels) if labels else "未分类"
 
 
+def localize_reason(value: object) -> str:
+    """把推荐理由中的模型缩写和英文类型名称替换为中文。"""
+    result = str(value).replace("MLP", "神经网络模型")
+    for source, target in sorted(GENRE_LABELS.items(), key=lambda item: len(item[0]), reverse=True):
+        result = result.replace(source, target)
+    return result
+
+
 @st.cache_data(show_spinner=False)
 def unified_catalog(root: str = str(PROJECT_ROOT)) -> pd.DataFrame:
     """合并具有中文片名且可由现有模型预测的两类电影。"""
@@ -209,7 +217,7 @@ def _international_recommendations(
     scored = score_candidates(candidates, predictions, profile, config["recommendation_weights"])
     sparse = int((train["user_id"] == int(user_id)).sum()) < 10
     scored["reasons"] = scored.apply(
-        lambda row: [reason.replace("MLP", "神经网络模型") for reason in generate_recommendation_reasons(row, sparse)],
+        lambda row: [localize_reason(reason) for reason in generate_recommendation_reasons(row, sparse)],
         axis=1,
     )
     scored["item_key"] = "international:" + scored["movie_id"].astype(str)

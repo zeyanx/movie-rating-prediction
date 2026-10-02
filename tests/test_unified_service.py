@@ -42,6 +42,9 @@ class UnifiedServiceTests(unittest.TestCase):
         self.assertEqual(set(result["model_space"]), {"china", "international"})
         self.assertTrue(result["final_score"].between(0.5, 5.0).all())
         self.assertTrue(result["reasons"].map(lambda values: len(values) >= 2).all())
+        reason_text = " ".join(reason for values in result["reasons"] for reason in values)
+        for english_label in ["Drama", "Romance", "War", "MLP"]:
+            self.assertNotIn(english_label, reason_text)
 
 
 if __name__ == "__main__":
