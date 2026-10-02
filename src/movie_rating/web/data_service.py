@@ -183,6 +183,60 @@ def chinese_catalog_facets() -> tuple[list[str], list[str]]:
     return origins, genres
 
 
+@st.cache_data(show_spinner=False)
+def load_chinese_rated_catalog(root: str = str(PROJECT_ROOT)) -> pd.DataFrame:
+    """加载具有真实评分训练依据的中国电影目录。"""
+    path = Path(root) / "data" / "catalog" / "chinese_rated_movies.csv"
+    if not path.is_file():
+        raise FileNotFoundError(f"缺少中国电影训练目录：{path}")
+    frame = pd.read_csv(path, encoding="utf-8-sig")
+    required = {
+        "catalog_id", "cn_movie_index", "title_zh", "title_en", "release_year",
+        "origins", "languages", "wikidata_id", "imdb_id", "source_url",
+    }
+    if not required.issubset(frame.columns) or len(frame) < 100:
+        raise ValueError("中国电影训练目录字段或规模异常")
+    if frame["catalog_id"].duplicated().any() or frame["cn_movie_index"].duplicated().any():
+        raise ValueError("中国电影训练目录主键重复")
+    frame["release_year"] = pd.to_numeric(frame["release_year"], errors="coerce").astype("Int64")
+    return frame.sort_values(["release_year", "title_zh"], ascending=[False, True]).reset_index(drop=True)
+
+
+def search_chinese_rated_catalog(
+    query: str = "",
+    origin: str | None = None,
+    language: str | None = None,
+    start_year: int | None = None,
+    end_year: int | None = None,
+    limit: int = 100,
+    root: str = str(PROJECT_ROOT),
+) -> pd.DataFrame:
+    """检索300部具有MovieLens 25M训练评分的中国电影。"""
+    if not 1 <= int(limit) <= 500:
+        raise ValueError("搜索结果上限必须位于1至500")
+    movies = load_chinese_rated_catalog(root).copy()
+    clean_query = str(query).strip()
+    if clean_query:
+        searchable = movies["title_zh"].fillna("") + " " + movies["title_en"].fillna("")
+        movies = movies[searchable.str.contains(clean_query, case=False, regex=False, na=False)]
+    if origin and origin != "全部":
+        movies = movies[movies["origins"].fillna("").str.split("|").map(lambda x: origin in x)]
+    if language and language != "全部":
+        movies = movies[movies["languages"].fillna("").str.split("|").map(lambda x: language in x)]
+    if start_year is not None:
+        movies = movies[movies["release_year"] >= int(start_year)]
+    if end_year is not None:
+        movies = movies[movies["release_year"] <= int(end_year)]
+    return movies.head(limit).reset_index(drop=True)
+
+
+def chinese_rated_facets(root: str = str(PROJECT_ROOT)) -> tuple[list[str], list[str]]:
+    movies = load_chinese_rated_catalog(root)
+    origins = sorted({v for text in movies["origins"] for v in str(text).split("|") if v})
+    languages = sorted({v for text in movies["languages"] for v in str(text).split("|") if v})
+    return origins, languages
+
+
 def get_reference_timestamp(user_id: int, train: pd.DataFrame | None = None) -> int:
     """使用用户最新训练时间；没有历史时回退到训练集最大时间。"""
     frame = load_train_ratings() if train is None else train

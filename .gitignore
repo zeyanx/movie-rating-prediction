@@ -26,6 +26,7 @@ data/imports/youku_mplug_movie_candidates.summary.json
 # MovieLens许可不允许在公开仓库中重新分发数据；应用首次启动时自动从官方地址生成
 data/raw/*.csv
 data/processed/*.csv
+data/chinese_training/
 reports/**/test_predictions.csv
 reports/stage5/unified_test_predictions.csv
 reports/**/*.html
@@ -42,6 +43,12 @@ models/stage4/*
 !models/stage4/final_preprocessor.joblib
 !models/stage4/mlp_final.pt
 !models/stage4/model_metadata.json
+!models/chinese/
+models/chinese/*
+!models/chinese/random_forest.joblib
+!models/chinese/xgboost.joblib
+!models/chinese/mlp.pt
+!models/chinese/model_metadata.json
 artifacts/
 checkpoints/
 *.tmp

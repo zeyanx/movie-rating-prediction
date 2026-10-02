@@ -14,10 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from movie_rating.web.data_service import (
-    build_prediction_frame, load_raw_tables, search_chinese_catalog, search_movies,
+    build_prediction_frame, load_chinese_rated_catalog, load_raw_tables,
+    search_chinese_catalog, search_chinese_rated_catalog, search_movies,
 )
 from movie_rating.web.database import get_chinese_movies, get_movie_localizations
-from movie_rating.web.model_service import predict_with_models
+from movie_rating.web.model_service import predict_chinese_ratings, predict_with_models
 from movie_rating.web.recommendation import recommend_movies
 from movie_rating.web.runtime_assets import ensure_runtime_assets
 
@@ -35,6 +36,14 @@ def main() -> int:
         raise AssertionError("MovieLens中文检索失败")
     if search_chinese_catalog("流浪地球", limit=10).iloc[0]["catalog_id"] != "cn034":
         raise AssertionError("中国电影扩展库检索失败")
+    rated_catalog = load_chinese_rated_catalog()
+    if len(rated_catalog) != 300:
+        raise AssertionError("中国电影真实评分目录规模异常")
+    if search_chinese_rated_catalog("重庆森林", limit=10).empty:
+        raise AssertionError("中国电影真实评分目录检索失败")
+    chinese_predictions = predict_chinese_ratings(1, [1, 2, 300])
+    if chinese_predictions.shape != (3, 3) or not np.isfinite(chinese_predictions.to_numpy()).all():
+        raise AssertionError("中国电影三模型推理失败")
     frame = build_prediction_frame(1, [1, 2, 3])
     predictions = predict_with_models(
         frame, ["global_mean", "random_forest", "xgboost", "mlp"]
@@ -67,6 +76,11 @@ def main() -> int:
         "candidate_count": metadata["candidate_count"],
         "movielens_localizations": len(localizations),
         "chinese_catalog_movies": len(chinese_catalog),
+        "chinese_rated_movies": len(rated_catalog),
+        "chinese_model_predictions": {
+            name: chinese_predictions[name].round(6).tolist()
+            for name in chinese_predictions.columns
+        },
         "app_test": "passed",
         "streamlit_health": "passed",
     }

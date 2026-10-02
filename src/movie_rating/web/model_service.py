@@ -8,7 +8,11 @@ import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
+import torch
 
+from movie_rating.chinese_models import (
+    ChineseRatingMLP, build_numeric_features, build_tree_features, standardize_numeric,
+)
 from movie_rating.neural import load_mlp_artifacts, predict_ratings
 
 from .config import PROJECT_ROOT
@@ -94,3 +98,76 @@ def predict_with_models(
             prediction = predict_with_ensemble(frame, name, root)
         result[name] = prediction
     return result.reset_index(drop=True)
+
+
+@st.cache_resource(show_spinner=False)
+def load_cached_chinese_models(root: str = str(PROJECT_ROOT)):
+    """一次缓存中国电影三种模型；页面首次使用时才加载。"""
+    base = Path(root) / "models" / "chinese"
+    metadata_path = base / "model_metadata.json"
+    required = [
+        metadata_path, base / "mlp.pt", base / "random_forest.joblib", base / "xgboost.joblib"
+    ]
+    missing = [str(path) for path in required if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(f"缺少中国电影模型产物：{missing}")
+    import json
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    model = ChineseRatingMLP(
+        int(metadata["num_users"]), int(metadata["num_movies"]),
+        int(metadata["numeric_features"]), int(metadata["embedding_dim"]),
+        float(metadata["dropout"]),
+    )
+    try:
+        state = torch.load(base / "mlp.pt", map_location="cpu", weights_only=True)
+    except TypeError:
+        state = torch.load(base / "mlp.pt", map_location="cpu")
+    model.load_state_dict(state)
+    model.eval()
+    return {
+        "metadata": metadata,
+        "mlp": model,
+        "random_forest": joblib.load(base / "random_forest.joblib"),
+        "xgboost": joblib.load(base / "xgboost.joblib"),
+    }
+
+
+def predict_chinese_ratings(
+    cn_user_id: int,
+    movie_indices: list[int] | np.ndarray,
+    model_names: tuple[str, ...] = ("xgboost", "random_forest", "mlp"),
+    root: str = str(PROJECT_ROOT),
+) -> pd.DataFrame:
+    """对独立中国电影用户空间进行批量预测，结果限制在0.5至5分。"""
+    loaded = load_cached_chinese_models(root)
+    metadata = loaded["metadata"]
+    user_id = int(cn_user_id)
+    if not 1 <= user_id <= int(metadata["num_users"]):
+        raise ValueError(f"中国电影演示用户必须位于1至{metadata['num_users']}")
+    movie_ids = np.asarray(movie_indices, dtype=np.int64).reshape(-1)
+    if movie_ids.size == 0:
+        return pd.DataFrame(columns=list(model_names))
+    if movie_ids.min() < 1 or movie_ids.max() > int(metadata["num_movies"]):
+        raise ValueError("中国电影模型索引超出范围")
+    users = np.full(movie_ids.size, user_id, dtype=np.int64)
+    timestamps = np.full(movie_ids.size, int(metadata["reference_timestamp"]), dtype=np.int64)
+    preprocessing = metadata["preprocessing"]
+    output: dict[str, np.ndarray] = {}
+    for name in model_names:
+        if name == "mlp":
+            numeric = standardize_numeric(
+                build_numeric_features(users, movie_ids, timestamps, preprocessing), preprocessing
+            )
+            with torch.no_grad():
+                values = loaded["mlp"](
+                    torch.as_tensor(users, dtype=torch.long),
+                    torch.as_tensor(movie_ids, dtype=torch.long),
+                    torch.as_tensor(numeric, dtype=torch.float32),
+                ).numpy()
+        elif name in {"xgboost", "random_forest"}:
+            features = build_tree_features(users, movie_ids, timestamps, preprocessing)
+            values = loaded[name]["model"].predict(features)
+        else:
+            raise ValueError(f"不支持的中国电影模型：{name}")
+        output[name] = np.clip(np.asarray(values, dtype=float), 0.5, 5.0)
+    return pd.DataFrame(output)

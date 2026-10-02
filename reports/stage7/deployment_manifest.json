@@ -1,5 +1,5 @@
 {
-  "created_at": "2026-10-02T07:27:56.051747+00:00",
+  "created_at": "2026-10-02T12:21:27.955652+00:00",
   "entrypoint": "app.py",
   "official_dataset_url": "https://files.grouplens.org/datasets/movielens/ml-100k.zip",
   "runtime_generated": [
@@ -8,7 +8,10 @@
     "data/raw/users.csv",
     "data/processed/train_ratings.csv",
     "data/processed/test_ratings.csv",
-    "data/app/movie_app.db"
+    "data/app/movie_app.db",
+    "data/chinese_training/ratings.csv",
+    "data/chinese_training/movies.csv",
+    "data/chinese_training/dataset_info.json"
   ],
   "files": [
     {
@@ -87,6 +90,42 @@
       "path": "models/stage4/model_metadata.json",
       "bytes": 2888,
       "sha256": "627edcbf10ce2008c6d3e8f1564982d7aff28d4e688b42fb72f9cbf4ccf5bfcb",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "网页推理模型"
+    },
+    {
+      "path": "models/chinese/random_forest.joblib",
+      "bytes": 35308320,
+      "sha256": "b2df46a8104b11c87e34094af18350d2bb97a1789eed13520d94ce8e51c7b77d",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": true,
+      "purpose": "网页推理模型"
+    },
+    {
+      "path": "models/chinese/xgboost.joblib",
+      "bytes": 1990074,
+      "sha256": "5e59ecf7c6067d789fb43985b88a59d6b484e4cb599cd64ebb51d88ea22cd63d",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "网页推理模型"
+    },
+    {
+      "path": "models/chinese/mlp.pt",
+      "bytes": 648759,
+      "sha256": "d2bb5b08a83be4e47b8455d8fbd5ffac59eca4e06187c80e8fa03195ab9023ed",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "网页推理模型"
+    },
+    {
+      "path": "models/chinese/model_metadata.json",
+      "bytes": 205804,
+      "sha256": "dbfeb7b9f23e085c4769541e13dd32ac94619f67af03692545ab1cd89cf0d9a2",
       "should_be_tracked": true,
       "git_tracked": true,
       "git_lfs_required": false,
@@ -174,6 +213,42 @@
       "purpose": "网页聚合实验报告"
     },
     {
+      "path": "reports/chinese_training/dataset_summary.json",
+      "bytes": 675,
+      "sha256": "817bf55bb8c10564efb7c01d678537bce6cafb958d2bf5e08c61bc9908efc729",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
+    },
+    {
+      "path": "reports/chinese_training/metrics.csv",
+      "bytes": 386,
+      "sha256": "1fdc2ee873bc053c739fc58e02fdfb0a5cb463435dcaed79ea8fb77a6b999915",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
+    },
+    {
+      "path": "reports/chinese_training/mlp_training_history.csv",
+      "bytes": 828,
+      "sha256": "e0e664925163315a2fab6be589d4ab27ae1ca482b3e0f27a03df7c5dcca76499",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
+    },
+    {
+      "path": "reports/chinese_training/summary.md",
+      "bytes": 533,
+      "sha256": "f0bec8237138e4d8cf26016a52ef92044397ed636d2edd71d6b3b6965fdfcc90",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "网页聚合实验报告"
+    },
+    {
       "path": "data/catalog/movie_localizations.csv",
       "bytes": 4619,
       "sha256": "d9f94d138fd9bb95a82b33717bdb98a4aa90fb5269847a482a2388943f3b3834",
@@ -190,7 +265,16 @@
       "git_tracked": true,
       "git_lfs_required": false,
       "purpose": "独立中国电影扩展目录"
+    },
+    {
+      "path": "data/catalog/chinese_rated_movies.csv",
+      "bytes": 40520,
+      "sha256": "b54aa59772aa78a3d2f779b3f2b12b15f4a938582a5e5a979780e26e1373b3ff",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "Wikidata CC0中国电影训练目录"
     }
   ],
-  "total_bytes": 41031977
+  "total_bytes": 79227876
 }

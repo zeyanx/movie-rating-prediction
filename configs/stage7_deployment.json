@@ -10,7 +10,7 @@
   "official_dataset_md5": "0e33842e24a9c977be4e0107933c0723",
   "runtime_data_policy": "应用首次启动时从GroupLens官方地址下载、校验并转换；原始数据不纳入公开仓库",
   "feedback_backend": "sqlite_ephemeral_on_community_cloud",
-  "chinese_catalog_policy": "80条MovieLens中文片名映射用于检索展示；48条独立中国电影基础目录用于冷启动浏览和个人记录，不进入既有模型训练",
+  "chinese_catalog_policy": "80条MovieLens 100K中文片名映射、48条冷启动基础目录，以及300部由MovieLens 25M真实评分与Wikidata CC0元数据构建的独立训练库；三个用户和模型空间严格隔离",
   "deployment_branch": "main",
   "deployment_commit": "6692b10",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
@@ -22,7 +22,11 @@
     "models/stage3/xgboost.joblib",
     "models/stage4/final_preprocessor.joblib",
     "models/stage4/mlp_final.pt",
-    "models/stage4/model_metadata.json"
+    "models/stage4/model_metadata.json",
+    "models/chinese/random_forest.joblib",
+    "models/chinese/xgboost.joblib",
+    "models/chinese/mlp.pt",
+    "models/chinese/model_metadata.json"
   ],
   "required_reports": [
     "reports/stage5/metrics_comparison.csv",
@@ -33,11 +37,16 @@
     "reports/stage5/segment_metrics.csv",
     "reports/stage5/residual_summary.csv",
     "reports/stage5/actual_rating_diagnostics.csv",
-    "reports/stage5/model_recommendation.json"
+    "reports/stage5/model_recommendation.json",
+    "reports/chinese_training/dataset_summary.json",
+    "reports/chinese_training/metrics.csv",
+    "reports/chinese_training/mlp_training_history.csv",
+    "reports/chinese_training/summary.md"
   ],
   "required_catalogs": [
     "data/catalog/movie_localizations.csv",
-    "data/catalog/chinese_movies.csv"
+    "data/catalog/chinese_movies.csv",
+    "data/catalog/chinese_rated_movies.csv"
   ],
   "runtime_generated": [
     "data/raw/ratings.csv",
@@ -45,7 +54,10 @@
     "data/raw/users.csv",
     "data/processed/train_ratings.csv",
     "data/processed/test_ratings.csv",
-    "data/app/movie_app.db"
+    "data/app/movie_app.db",
+    "data/chinese_training/ratings.csv",
+    "data/chinese_training/movies.csv",
+    "data/chinese_training/dataset_info.json"
   ],
   "excluded_license_sensitive_files": [
     "data/external/",
@@ -54,8 +66,12 @@
     "data/raw/users.csv",
     "data/processed/train_ratings.csv",
     "data/processed/test_ratings.csv",
+    "data/chinese_training/",
     "reports/**/test_predictions.csv",
     "reports/stage5/unified_test_predictions.csv"
   ],
-  "git_lfs_paths": ["models/stage3/random_forest.joblib"]
+  "git_lfs_paths": [
+    "models/stage3/random_forest.joblib",
+    "models/chinese/random_forest.joblib"
+  ]
 }

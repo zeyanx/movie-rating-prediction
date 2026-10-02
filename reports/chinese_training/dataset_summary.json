@@ -1,0 +1,18 @@
+{
+  "dataset_name": "Chinese-language MovieLens 25M research subset",
+  "generated_at": "2026-10-02T12:18:52.933867+00:00",
+  "movielens_url": "https://files.grouplens.org/datasets/movielens/ml-25m.zip",
+  "movielens_md5": "6b51fb2759a8657d3bfcbfc42b592ada",
+  "wikidata_endpoint": "https://query.wikidata.org/sparql",
+  "selection_rule": "target production country AND target Chinese original language",
+  "minimum_user_ratings": 5,
+  "minimum_movie_ratings": 10,
+  "candidate_imdb_ids": 3888,
+  "matched_movielens_movies": 827,
+  "raw_subset_ratings": 130908,
+  "ratings": 55483,
+  "users": 5973,
+  "movies": 300,
+  "rating_min": 0.5,
+  "rating_max": 5.0
+}

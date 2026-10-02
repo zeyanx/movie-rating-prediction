@@ -22,6 +22,8 @@ DEPLOY_MODELS = [
     "models/global_mean_baseline.joblib", "models/stage3/random_forest.joblib",
     "models/stage3/xgboost.joblib", "models/stage4/final_preprocessor.joblib",
     "models/stage4/mlp_final.pt", "models/stage4/model_metadata.json",
+    "models/chinese/random_forest.joblib", "models/chinese/xgboost.joblib",
+    "models/chinese/mlp.pt", "models/chinese/model_metadata.json",
 ]
 DEPLOY_REPORTS = [
     "reports/stage5/metrics_comparison.csv", "reports/stage5/efficiency_benchmark.csv",
@@ -29,6 +31,8 @@ DEPLOY_REPORTS = [
     "reports/stage5/mlp_permutation_importance.csv", "reports/stage5/segment_metrics.csv",
     "reports/stage5/residual_summary.csv", "reports/stage5/actual_rating_diagnostics.csv",
     "reports/stage5/model_recommendation.json",
+    "reports/chinese_training/dataset_summary.json", "reports/chinese_training/metrics.csv",
+    "reports/chinese_training/mlp_training_history.csv", "reports/chinese_training/summary.md",
 ]
 
 

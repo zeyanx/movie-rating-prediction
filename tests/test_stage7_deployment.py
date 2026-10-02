@@ -56,6 +56,7 @@ class DeploymentComplianceTest(unittest.TestCase):
     def test_lfs_and_source_boundaries(self) -> None:
         lfs = git_lines("lfs", "ls-files", "--name-only")
         self.assertIn("models/stage3/random_forest.joblib", lfs)
+        self.assertIn("models/chinese/random_forest.joblib", lfs)
         source = "\n".join(
             path.read_text(encoding="utf-8", errors="ignore")
             for folder in [ROOT / "app_pages", ROOT / "src/movie_rating/web"]

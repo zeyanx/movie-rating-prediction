@@ -41,6 +41,7 @@ def main() -> int:
         "conda/environment.yml": "Windows本地Conda复现环境",
         "data/catalog/movie_localizations.csv": "MovieLens中文片名与别名索引",
         "data/catalog/chinese_movies.csv": "独立中国电影扩展目录",
+        "data/catalog/chinese_rated_movies.csv": "Wikidata CC0中国电影训练目录",
     }
     items = []
     for relative in required:

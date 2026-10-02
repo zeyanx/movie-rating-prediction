@@ -464,3 +464,35 @@ python -m unittest tests.test_youku_mplug_import -v
 脚本兼容CSV、JSONL和JSON，内置官方两个电影相关类别的编号映射；也可用`--classname`显式传入官方`classname.json`做一致性检查。输出为`data/imports/youku_mplug_movie_candidates.csv`及摘要JSON。候选表默认状态为`pending`，并预留规范中文片名、年份、地区、类型和简介字段。必须核对来源、确认记录对应电影正片并补齐事实字段，才能人工追加到`data/catalog/chinese_movies.csv`；短视频标题、预告、混剪和杂谈不得直接作为电影条目。`--force`会覆盖已有候选及人工审核内容，只应在明确需要重新生成时使用。
 
 本项目只使用用户自行取得的标注文件，不下载或再分发Youku视频。Youku-mPLUG仓库代码采用Apache-2.0许可证，但视频、文本和具体数据使用仍应遵守官方数据页条款及内容权利要求；代码许可证不能替代对数据内容的授权。
+
+## 中国电影真实评分数据库与独立训练
+
+Youku-mPLUG不包含规范电影评分，因此评分扩展实验改用可复现的真实数据链路：MovieLens 25M提供匿名用户评分和IMDb映射，Wikidata提供CC0的出品地区、原始语言、中英文片名与上映年份。影片必须同时满足“出品地区属于中国大陆、香港、台湾、澳门或民国时期”以及“原始语言属于中文、官话、粤语、吴语或闽南语”等条件，避免把仅在中国参与制作的英语片误判为中国电影。
+
+构建和训练命令：
+
+```powershell
+conda activate movie
+python scripts/build_chinese_ratings_dataset.py
+python scripts/train_chinese_models.py
+python scripts/verify_chinese_training.py
+```
+
+构建脚本从GroupLens官方地址下载`ml-25m.zip`并核对MD5；网络不可用时可手动下载后使用：
+
+```powershell
+python scripts/build_chinese_ratings_dataset.py --archive D:\Downloads\ml-25m.zip
+```
+
+迭代过滤要求每位用户至少评价5部保留影片、每部影片至少有10条保留评分。实际生成55,483条评分、5,973名用户和300部中国电影。对每位用户按时间排序，最后一次评分作为测试集、倒数第二次作为验证集，其余为训练集；测试集固定为5,973条。
+
+| 模型 | 测试RMSE | 测试MAE | R² |
+|---|---:|---:|---:|
+| XGBoost | 0.785562 | 0.581466 | 0.316829 |
+| 随机森林 | 0.789642 | 0.583603 | 0.309714 |
+| PyTorch MLP | 0.794466 | 0.596052 | 0.301255 |
+| 全局均值 | 0.954616 | 0.732787 | -0.008847 |
+
+训练模型位于`models/chinese/`，实验报告位于`reports/chinese_training/`。Streamlit“中文电影库 → 中国电影真实评分库”提供300部影片检索、独立用户选择、三模型评分预测和推荐依据；模型使用`st.cache_resource`加载。
+
+MovieLens 25M原始包、评分子集和原始用户/影片ID均被`.gitignore`排除，不在公开仓库中再分发。公开的`data/catalog/chinese_rated_movies.csv`只包含Wikidata CC0字段以及本项目生成的内部模型索引。MovieLens 25M仅用于非商业课程研究，使用者须阅读GroupLens官方README、遵守不得擅自再分发等许可条件并在论文中致谢。
