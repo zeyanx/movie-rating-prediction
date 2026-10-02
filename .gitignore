@@ -18,6 +18,11 @@ data/app/*.sqlite3
 data/external/
 *.part
 
+# Youku-mPLUG只作为人工审核线索源；大体积视频与本地候选文件不进入仓库
+data/external/youku_mplug/
+data/imports/youku_mplug_movie_candidates.csv
+data/imports/youku_mplug_movie_candidates.summary.json
+
 # MovieLens许可不允许在公开仓库中重新分发数据；应用首次启动时自动从官方地址生成
 data/raw/*.csv
 data/processed/*.csv

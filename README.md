@@ -447,3 +447,20 @@ conda run -n movie python scripts/test_clean_deployment.py
 ```
 
 基础目录的简介为课程项目原创概述，资料链接逐条保留在`source_url`；该目录用于检索和演示，不宣称完整收录全部华语电影，也不作为既有评分模型的训练数据。
+
+### Youku-mPLUG候选线索导入
+
+[Youku-mPLUG](https://github.com/X-PLUG/Youku-mPLUG) 是大规模中文视频—文本预训练数据集，官方类别中与电影有关的是“电影剪辑”和“电影周边（预告/杂谈）”。这些记录是视频标题和片段，不是带有上映年份、导演、类型及稳定影片ID的规范电影数据库，因此系统不会把它们直接写入正式中国电影目录，也不会把视频文件纳入仓库或Streamlit部署包。
+
+如已按官方说明从[ModelScope数据页](https://modelscope.cn/datasets/modelscope/Youku-AliceMind/summary)取得分类标注，可只提取电影相关标题作为人工核验线索：
+
+```powershell
+conda activate movie
+python scripts/import_youku_mplug_candidates.py `
+  data/external/youku_mplug/classification_train.csv
+python -m unittest tests.test_youku_mplug_import -v
+```
+
+脚本兼容CSV、JSONL和JSON，内置官方两个电影相关类别的编号映射；也可用`--classname`显式传入官方`classname.json`做一致性检查。输出为`data/imports/youku_mplug_movie_candidates.csv`及摘要JSON。候选表默认状态为`pending`，并预留规范中文片名、年份、地区、类型和简介字段。必须核对来源、确认记录对应电影正片并补齐事实字段，才能人工追加到`data/catalog/chinese_movies.csv`；短视频标题、预告、混剪和杂谈不得直接作为电影条目。`--force`会覆盖已有候选及人工审核内容，只应在明确需要重新生成时使用。
+
+本项目只使用用户自行取得的标注文件，不下载或再分发Youku视频。Youku-mPLUG仓库代码采用Apache-2.0许可证，但视频、文本和具体数据使用仍应遵守官方数据页条款及内容权利要求；代码许可证不能替代对数据内容的授权。
