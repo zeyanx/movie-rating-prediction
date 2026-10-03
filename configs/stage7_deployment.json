@@ -12,7 +12,7 @@
   "feedback_backend": "supabase_auth_postgresql_rls_with_local_sqlite_fallback",
   "chinese_catalog_policy": "网页统一展示300部中国电影和1324部具有中文译名的其他国家电影；两类影片统一按动作、冒险、喜剧等题材筛选，按影片来源选择对应评分模型，并在推荐层混排结果，不合并两套训练主键",
   "deployment_branch": "main",
-  "deployment_commit": "65cbb6f",
+  "deployment_commit": "c713c93",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
   "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
   "streamlit_cloud_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",

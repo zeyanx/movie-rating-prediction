@@ -1,58 +1,100 @@
 {
-  "validated_at": "2026-10-02T21:18:00+08:00",
+  "validated_at": "2026-10-03T16:20:51+08:00",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
   "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
-  "verified_runtime_commit": "f1e5808",
+  "verified_runtime_commit": "c713c93",
   "cloud_python": "3.11",
   "result": "passed",
   "pages": [
     {
       "name": "首页",
       "route": "/",
-      "checks": ["全中文首页", "统一电影数据概况", "中文快速搜索", "中国与其他国家电影混合推荐预览"],
-      "screenshot": "reports/stage7/screenshots/01_home.png"
+      "current_access": "protected_by_login",
+      "content_validation": "2026-10-02已完成"
     },
     {
       "name": "评分预测",
       "route": "/~/+/movie_detail",
-      "checks": ["流浪地球中文详情", "梯度提升树预测3.45/5", "多模型评分比较", "三条中文评分依据"],
-      "screenshot": "reports/stage7/screenshots/02_movie_detail.png"
+      "current_access": "protected_by_login",
+      "content_validation": "2026-10-02已完成"
     },
     {
       "name": "电影库",
       "route": "/~/+/chinese_catalog",
-      "checks": ["统一展示380部电影", "中国电影300部", "其他国家电影80部", "中文片名统一检索", "地区和年份筛选", "按影片来源自动调用评分模型"],
-      "online_prediction": {
-        "movie": "流浪地球",
-        "user_id": 1,
-        "xgboost": 3.45,
-        "random_forest": 3.34,
-        "mlp": 3.59
-      },
-      "screenshot": "reports/stage7/screenshots/06_chinese_catalog.png"
+      "current_access": "protected_by_login",
+      "content_validation": "2026-10-02已完成"
     },
     {
       "name": "个性化推荐",
       "route": "/~/+/recommendations",
-      "checks": ["用户1前10项推荐", "中国电影5部", "其他国家电影5部", "模型名称和类型名称均为中文", "每部电影显示多条中文推荐理由"],
-      "screenshot": "reports/stage7/screenshots/03_recommendations.png"
+      "current_access": "protected_by_login",
+      "content_validation": "2026-10-02已完成"
     },
     {
       "name": "我的观影",
       "route": "/~/+/my_movies",
-      "checks": ["训练期历史可见", "在线想看记录写入后计数为1", "云端SQLite临时性提示可见"],
-      "screenshot": "reports/stage7/screenshots/04_my_movies.png"
+      "current_access": "protected_by_login",
+      "content_validation": "2026-10-02已完成"
     },
     {
       "name": "模型分析",
       "route": "/~/+/model_lab",
-      "checks": ["五模型统一测试集指标可见", "评价指标和表格列名中文化", "四模型在线推理已执行且无错误"],
-      "screenshot": "reports/stage7/screenshots/05_model_lab.png"
+      "current_access": "protected_by_login",
+      "content_validation": "2026-10-02已完成"
     }
   ],
-  "feedback_check": {
-    "action": "将卡萨布兰卡加入想看",
-    "immediate_readback": true,
-    "durability_note": "Community Cloud本地SQLite不保证跨重启、休眠或重新部署持久化"
-  }
+  "public_access": {
+    "anonymous_page_load": true,
+    "login_gate_visible": true,
+    "login_tab_visible": true,
+    "signup_tab_visible": true,
+    "signup_fields": [
+      "昵称",
+      "邮箱",
+      "密码",
+      "确认密码",
+      "数据使用同意"
+    ],
+    "plaintext_password_storage": false
+  },
+  "supabase": {
+    "project_ref": "ngcjdtpzdbwvryobjepf",
+    "project_status": "Healthy",
+    "streamlit_secrets_configured": true,
+    "tables": [
+      "profiles",
+      "account_interactions",
+      "account_catalog_interactions"
+    ],
+    "row_level_security_enabled": true,
+    "policy_scope": "authenticated users can only access rows whose account id equals auth.uid()",
+    "service_role_key_used_by_streamlit": false
+  },
+  "online_checks": [
+    {
+      "route": "/~/+/movie_detail",
+      "check": "未登录访问者显示中文登录界面",
+      "passed": true
+    },
+    {
+      "route": "/~/+/movie_detail",
+      "check": "创建账户表单可以切换并完整显示",
+      "passed": true
+    },
+    {
+      "route": "Supabase SQL Editor",
+      "check": "建表、索引、授权与RLS策略脚本执行成功",
+      "passed": true
+    },
+    {
+      "route": "Supabase Table Editor",
+      "check": "三张账户数据表均存在并通过Data API公开",
+      "passed": true
+    }
+  ],
+  "account_creation_test": {
+    "performed": false,
+    "reason": "未使用或索取用户邮箱、密码创建测试账户；由用户自行注册后可继续验证登录、推荐和跨会话持久化"
+  },
+  "fallback": "未配置Supabase时仅用于本地演示的SQLite后端；线上部署已启用Supabase持久化"
 }
