@@ -1,8 +1,8 @@
 {
-  "validated_at": "2026-10-03T16:20:51+08:00",
+  "validated_at": "2026-10-03T16:38:42+08:00",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",
   "streamlit_app_url": "https://mccr78dsncofymbfxhdwfo.streamlit.app/",
-  "verified_runtime_commit": "c713c93",
+  "verified_runtime_commit": "7a41804",
   "cloud_python": "3.11",
   "result": "passed",
   "pages": [
@@ -90,11 +90,23 @@
       "route": "Supabase Table Editor",
       "check": "三张账户数据表均存在并通过Data API公开",
       "passed": true
+    },
+    {
+      "route": "Supabase Auth URL Configuration",
+      "check": "Site URL与允许回跳地址均指向公开Streamlit网站",
+      "passed": true
+    },
+    {
+      "route": "/~/+/movie_detail",
+      "check": "重新发送确认邮件表单已上线并显示60秒频率提示",
+      "passed": true
     }
   ],
   "account_creation_test": {
-    "performed": false,
-    "reason": "未使用或索取用户邮箱、密码创建测试账户；由用户自行注册后可继续验证登录、推荐和跨会话持久化"
+    "performed": true,
+    "account_state": "waiting_for_email_verification",
+    "email_redacted": true,
+    "next_check": "用户完成邮件验证后验证登录、推荐和跨会话持久化"
   },
   "fallback": "未配置Supabase时仅用于本地演示的SQLite后端；线上部署已启用Supabase持久化"
 }
