@@ -359,7 +359,7 @@ reports/stage5/stage5_summary.md               阶段总结
 ### 11.1 主要功能
 
 - 首页：统一电影规模、模型指标、系统状态、中文搜索和混合推荐预览；
-- 电影库：合并300部中国电影和80部具有中文译名的其他国家电影，统一检索、筛选和评分；
+- 电影库：合并300部中国电影和1,324部具有中文译名的其他国家电影，统一按片名、电影类型和年份检索、筛选与评分；
 - 评分预测：自动按影片来源选择对应模型，显示中文模型名称、多模型评分和预测依据；
 - 个性化推荐：中国电影与其他国家电影混合排序，并为每部电影提供至少两条理由；
 - 我的观影：区分固定训练期历史与网页SQLite记录，支持编辑、二次确认删除和内存CSV下载；
@@ -434,10 +434,19 @@ Streamlit Community Cloud入口为 `app.py`，公开应用为 <https://mccr78dsn
 
 系统包含两类边界清晰的中文电影资料：
 
-1. `data/catalog/movie_localizations.csv` 为80部高频MovieLens影片提供中文片名和常用别名。中文字段只参与搜索与显示，影片仍使用原`movie_id`，因此不会改变模型输入、训练集、测试集或论文指标。
+1. `data/catalog/movie_localizations.csv` 为1,324部MovieLens影片提供中文片名和常用别名。中文字段只参与搜索与显示，影片仍使用原`movie_id`，因此不会改变模型输入、训练集、测试集或论文指标。
 2. `data/catalog/chinese_movies.csv` 提供48部中国电影基础目录，覆盖1934年至2024年。它们可按中英文片名、简介、地区、类型和年份检索，也可以加入想看、标记已看和记录个人评分。
 
-应用启动时会把两张CSV幂等同步到SQLite的`movie_localizations`、`chinese_movies`和`catalog_interactions`表。独立扩展库中没有MovieLens ID的影片会明确显示“冷启动”，不会输出没有训练依据的模型预测。
+应用启动时会把两张CSV幂等同步到SQLite的`movie_localizations`、`chinese_movies`和`catalog_interactions`表。统一电影库当前包含1,624部电影；300部中国电影与1,324部其他国家电影共用“动作、冒险、喜剧、剧情”等中文类型筛选，不再按地区作为主要搜索条件。独立扩展库中没有MovieLens ID的影片会明确显示“冷启动”，不会输出没有训练依据的模型预测。
+
+需要重新生成中文片名扩展和中国电影类型时运行：
+
+```powershell
+conda activate movie
+python scripts/expand_movie_catalog.py
+```
+
+脚本通过MovieLens 25M的IMDb映射关联影片，并从Wikidata取得中文片名；已有人工校对译名优先保留。它支持重复执行，使用`--force`可重新查询Wikidata。MovieLens中唯一未提供类型的《路边野餐》以可审计覆盖项补为“剧情”。
 
 继续扩充时可直接追加`chinese_movies.csv`，要求`catalog_id`唯一、年份为整数，并使用`|`分隔多个地区和类型。修改后运行：
 
@@ -494,6 +503,6 @@ python scripts/build_chinese_ratings_dataset.py --archive D:\Downloads\ml-25m.zi
 | PyTorch MLP | 0.794466 | 0.596052 | 0.301255 |
 | 全局均值 | 0.954616 | 0.732787 | -0.008847 |
 
-训练模型位于`models/chinese/`，实验报告位于`reports/chinese_training/`。网页“电影库”将300部中国电影与80部具有中文译名的其他国家电影合并展示，并按影片来源自动选择评分模型；“个性化推荐”会混排两类影片并输出中文推荐理由。模型使用`st.cache_resource`加载。
+训练模型位于`models/chinese/`，实验报告位于`reports/chinese_training/`。网页“电影库”将300部中国电影与1,324部具有中文译名的其他国家电影合并展示，所有影片按“冒险、喜剧”等题材统一筛选，并按影片来源自动选择评分模型；“个性化推荐”会在所选题材内混排两类影片并输出中文推荐理由。模型使用`st.cache_resource`加载。
 
 MovieLens 25M原始包、评分子集和原始用户/影片ID均被`.gitignore`排除，不在公开仓库中再分发。公开的`data/catalog/chinese_rated_movies.csv`只包含Wikidata CC0字段以及本项目生成的内部模型索引。MovieLens 25M仅用于非商业课程研究，使用者须阅读GroupLens官方README、遵守不得擅自再分发等许可条件并在论文中致谢。

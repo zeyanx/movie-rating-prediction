@@ -7,7 +7,9 @@ import plotly.express as px
 import streamlit as st
 
 from movie_rating.web.ui import ensure_session_state, page_intro, valid_external_url
-from movie_rating.web.unified_service import predict_unified_item, search_unified_catalog
+from movie_rating.web.unified_service import (
+    predict_unified_item, search_unified_catalog, unified_genres,
+)
 
 
 user_id, _ = ensure_session_state()
@@ -16,12 +18,12 @@ page_intro("评分预测", "搜索中国电影或其他国家电影，查看模�
 with st.form("unified_prediction_search"):
     c1, c2 = st.columns([2, 1])
     query = c1.text_input("电影名称", placeholder="例如：流浪地球、星球大战")
-    region = c2.selectbox("电影地区", ["全部", "中国电影", "其他国家和地区"])
+    genre = c2.selectbox("电影类型", ["全部", *unified_genres()])
     st.form_submit_button("查找电影", type="primary")
 
-matches = search_unified_catalog(query=query, region=region, limit=200)
+matches = search_unified_catalog(query=query, genre=genre, limit=200)
 if matches.empty:
-    st.info("没有找到匹配电影，请缩短关键词或切换电影地区。")
+    st.info("没有找到匹配电影，请缩短关键词或切换电影类型。")
     st.stop()
 
 selected_key = st.selectbox(
@@ -39,7 +41,7 @@ title_col, info_col = st.columns([3, 1])
 title_col.subheader(str(selected["title_zh"]))
 title_col.write(
     f"国家或地区：{selected['origin']}  ·  "
-    f"类型或语言：{selected['category']}  ·  "
+    f"电影类型：{selected['category']}  ·  "
     f"上映年份：{selected['release_year']}"
 )
 info_col.metric("历史平均分", f"{float(selected['rating_mean']):.2f} / 5")

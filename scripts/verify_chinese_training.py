@@ -36,6 +36,8 @@ def main() -> int:
     require(len(catalog) == 300, "公开中国电影目录应恰好有300部")
     require(catalog["catalog_id"].is_unique, "catalog_id存在重复")
     require(catalog["cn_movie_index"].is_unique, "模型影片索引存在重复")
+    require("genres" in catalog.columns, "中国电影目录缺少类型字段")
+    require(catalog["genres"].fillna("").str.len().gt(0).all(), "中国电影存在空类型")
     require(sorted(catalog["cn_movie_index"].tolist()) == list(range(1, 301)), "影片索引不连续")
     require("movieId" not in catalog.columns and "userId" not in catalog.columns,
             "公开目录不得再分发MovieLens原始标识")

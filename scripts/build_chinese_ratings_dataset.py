@@ -37,6 +37,7 @@ REPORT_DIR = ROOT / "reports" / "chinese_training"
 DATA_URL = "https://files.grouplens.org/datasets/movielens/ml-25m.zip"
 MD5_URL = DATA_URL + ".md5"
 OFFICIAL_MD5 = "6b51fb2759a8657d3bfcbfc42b592ada"
+GENRE_OVERRIDES = {"tt4613272": "Drama"}  # MovieLens未分类：《路边野餐》
 WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql"
 USER_AGENT = "MovieRatingCourseProject/1.0 (https://github.com/zeyanx/movie-rating-prediction)"
 
@@ -259,6 +260,7 @@ def iterative_filter(ratings: pd.DataFrame, min_user: int, min_movie: int) -> pd
 
 def build_dataset(force: bool, min_user: int, min_movie: int) -> dict[str, Any]:
     links = pd.read_csv(EXTRACTED / "links.csv", dtype={"imdbId": str})
+    movie_metadata = pd.read_csv(EXTRACTED / "movies.csv")
     links["imdb_id"] = "tt" + links["imdbId"].str.zfill(7)
     imdb_to_qid = discover_chinese_imdb_ids(force)
     matched = links[links["imdb_id"].isin(imdb_to_qid)].copy()
@@ -283,6 +285,13 @@ def build_dataset(force: bool, min_user: int, min_movie: int) -> dict[str, Any]:
     movie_map = matched[["movieId", "imdb_id"]].drop_duplicates().merge(
         details, on="imdb_id", how="left", validate="many_to_one"
     )
+    movie_map = movie_map.merge(
+        movie_metadata[["movieId", "genres"]],
+        on="movieId", how="left", validate="one_to_one",
+    )
+    movie_map["genres"] = movie_map.apply(
+        lambda row: GENRE_OVERRIDES.get(row["imdb_id"], row["genres"]), axis=1
+    )
     movie_map = movie_map[movie_map["movieId"].isin(kept_movie_ids)].copy()
     movie_map["cn_movie_index"] = movie_map["movieId"].map(movie_index)
     movie_map["catalog_id"] = "cnwd_" + movie_map["wikidata_id"].str.lower()
@@ -301,7 +310,7 @@ def build_dataset(force: bool, min_user: int, min_movie: int) -> dict[str, Any]:
     # 公开目录只写入Wikidata CC0字段及本项目内部索引，不分发MovieLens原始ID或评分。
     public_columns = [
         "catalog_id", "cn_movie_index", "title_zh", "title_en", "release_year",
-        "origins", "languages", "wikidata_id", "imdb_id",
+        "origins", "languages", "genres", "wikidata_id", "imdb_id",
     ]
     public = local_movies[public_columns].copy()
     public["source_url"] = "https://www.wikidata.org/wiki/" + public["wikidata_id"]

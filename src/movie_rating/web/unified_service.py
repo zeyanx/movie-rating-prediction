@@ -31,6 +31,7 @@ GENRE_LABELS = {
     "Adventure": "冒险",
     "Animation": "动画",
     "Children's": "儿童",
+    "Children": "儿童",
     "Comedy": "喜剧",
     "Crime": "犯罪",
     "Documentary": "纪录片",
@@ -45,6 +46,7 @@ GENRE_LABELS = {
     "Thriller": "惊悚",
     "War": "战争",
     "Western": "西部",
+    "(no genres listed)": "未分类",
 }
 
 MODEL_LABELS_ZH = {
@@ -113,7 +115,7 @@ def unified_catalog(root: str = str(PROJECT_ROOT)) -> pd.DataFrame:
         "title_zh": chinese["title_zh"],
         "search_title": chinese["title_zh"].fillna("") + " " + chinese["title_en"].fillna(""),
         "origin": chinese["origins"].fillna("中国"),
-        "category": chinese["languages"].fillna("中文电影").map(lambda value: f"中国电影·{value}"),
+        "category": chinese["genres"].map(translate_genres),
         "release_year": chinese["release_year"],
         "rating_count": movie_count[indices],
         "rating_mean": movie_mean[indices],
@@ -129,6 +131,7 @@ def unified_catalog(root: str = str(PROJECT_ROOT)) -> pd.DataFrame:
 
 def search_unified_catalog(
     query: str = "",
+    genre: str = "全部",
     region: str = "全部",
     start_year: int | None = None,
     end_year: int | None = None,
@@ -144,6 +147,10 @@ def search_unified_catalog(
         movies = movies[
             movies["search_title"].str.contains(clean_query, case=False, regex=False, na=False)
         ]
+    if genre and genre != "全部":
+        movies = movies[
+            movies["category"].str.split("、").map(lambda values: genre in values)
+        ]
     if region == "中国电影":
         movies = movies[movies["model_space"] == "china"]
     elif region == "其他国家和地区":
@@ -153,6 +160,18 @@ def search_unified_catalog(
     if end_year is not None:
         movies = movies[movies["release_year"] <= int(end_year)]
     return movies.head(int(limit)).reset_index(drop=True)
+
+
+def unified_genres(root: str = str(PROJECT_ROOT)) -> list[str]:
+    """返回中国电影和其他国家电影共用的中文类型列表。"""
+    catalog = unified_catalog(root)
+    values = {
+        genre
+        for text in catalog["category"].fillna("")
+        for genre in str(text).split("、")
+        if genre and genre != "未分类"
+    }
+    return sorted(values)
 
 
 def predict_unified_item(
@@ -198,6 +217,7 @@ def _international_recommendations(
     user_id: int,
     interactions: pd.DataFrame | None,
     count: int,
+    genre: str,
     root: str,
 ) -> pd.DataFrame:
     config = load_app_config()
@@ -209,6 +229,12 @@ def _international_recommendations(
         minimum_popularity_count=0, top_n=max(count, 1),
     )
     candidates = candidates[candidates["title_zh"].ne("")].reset_index(drop=True)
+    if genre and genre != "全部":
+        candidates = candidates[
+            candidates["genres"].map(translate_genres).str.split("、").map(
+                lambda values: genre in values
+            )
+        ].reset_index(drop=True)
     if candidates.empty:
         return candidates
     model_input = build_prediction_frame(user_id, candidates["movie_id"].astype(int).tolist(), root)
@@ -223,6 +249,7 @@ def _international_recommendations(
     scored["item_key"] = "international:" + scored["movie_id"].astype(str)
     scored["model_space"] = "international"
     scored["origin"] = "其他国家和地区"
+    scored["category"] = scored["genres"].map(translate_genres)
     scored["title_zh"] = scored["title_zh"].astype(str)
     scored["model_label"] = "神经网络"
     return scored.sort_values(
@@ -231,8 +258,16 @@ def _international_recommendations(
     ).head(count).reset_index(drop=True)
 
 
-def _chinese_recommendations(user_id: int, count: int, root: str) -> pd.DataFrame:
+def _chinese_recommendations(user_id: int, count: int, genre: str, root: str) -> pd.DataFrame:
     catalog = load_chinese_rated_catalog(root).copy()
+    if genre and genre != "全部":
+        catalog = catalog[
+            catalog["genres"].map(translate_genres).str.split("、").map(
+                lambda values: genre in values
+            )
+        ].reset_index(drop=True)
+    if catalog.empty:
+        return catalog
     indices = catalog["cn_movie_index"].astype(int).to_numpy()
     predictions = predict_chinese_ratings(
         int(user_id), indices, model_names=("xgboost",), root=root
@@ -244,6 +279,7 @@ def _chinese_recommendations(user_id: int, count: int, root: str) -> pd.DataFram
     result["item_key"] = "china:" + result["cn_movie_index"].astype(str)
     result["model_space"] = "china"
     result["origin"] = result["origins"]
+    result["category"] = result["genres"].map(translate_genres)
     result["mlp_prediction"] = predictions
     result["rating_count"] = movie_count
     result["rating_mean"] = movie_mean
@@ -267,6 +303,7 @@ def recommend_unified_movies(
     user_id: int,
     interactions: pd.DataFrame | None = None,
     top_n: int = 10,
+    genre: str = "全部",
     region: str = "全部",
     root: str = str(PROJECT_ROOT),
 ) -> pd.DataFrame:
@@ -275,16 +312,34 @@ def recommend_unified_movies(
     if not 1 <= n <= 20:
         raise ValueError("推荐数量必须位于1至20")
     if region == "中国电影":
-        return _chinese_recommendations(user_id, n, root)
+        return _chinese_recommendations(user_id, n, genre, root)
     if region == "其他国家和地区":
-        return _international_recommendations(user_id, interactions, n, root)
+        return _international_recommendations(user_id, interactions, n, genre, root)
 
     chinese_count = max(1, n // 2)
     international_count = max(1, n - chinese_count)
-    combined = pd.concat([
-        _chinese_recommendations(user_id, chinese_count, root),
-        _international_recommendations(user_id, interactions, international_count, root),
-    ], ignore_index=True, sort=False)
+    chinese = _chinese_recommendations(user_id, n, genre, root)
+    international = _international_recommendations(user_id, interactions, n, genre, root)
+
+    # 优先保持两类来源均衡；某类候选不足时由另一类自动补齐。
+    selected_chinese = chinese.head(chinese_count)
+    selected_international = international.head(international_count)
+    remaining = n - len(selected_chinese) - len(selected_international)
+    if remaining > 0:
+        chinese_extra = chinese.iloc[len(selected_chinese):]
+        international_extra = international.iloc[len(selected_international):]
+        extras = pd.concat([chinese_extra, international_extra], ignore_index=True, sort=False)
+        if not extras.empty:
+            extras = extras.sort_values(
+                ["final_score", "rating_count", "title_zh"],
+                ascending=[False, False, True], kind="mergesort",
+            ).head(remaining)
+        selected_chinese = pd.concat([selected_chinese, extras], ignore_index=True, sort=False)
+    combined = pd.concat(
+        [selected_chinese, selected_international], ignore_index=True, sort=False
+    )
+    if combined.empty:
+        return combined
     return combined.sort_values(
         ["final_score", "rating_count", "title_zh"],
         ascending=[False, False, True], kind="mergesort",

@@ -32,7 +32,7 @@ class ChineseCatalogTests(unittest.TestCase):
     def test_seed_counts_and_primary_keys(self) -> None:
         localizations = get_movie_localizations(self.db_path)
         catalog = get_chinese_movies(self.db_path)
-        self.assertEqual(len(localizations), 80)
+        self.assertEqual(len(localizations), 1_324)
         self.assertEqual(len(catalog), 48)
         self.assertTrue(localizations["movie_id"].is_unique)
         self.assertTrue(catalog["catalog_id"].is_unique)

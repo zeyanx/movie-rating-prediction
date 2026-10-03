@@ -7,7 +7,7 @@ import streamlit as st
 from movie_rating.web.config import load_app_config
 from movie_rating.web.database import get_interactions, upsert_interaction
 from movie_rating.web.ui import ensure_session_state, page_intro
-from movie_rating.web.unified_service import recommend_unified_movies
+from movie_rating.web.unified_service import recommend_unified_movies, unified_genres
 
 
 user_id, profile_key = ensure_session_state()
@@ -17,7 +17,7 @@ page_intro("个性化推荐", "综合中国电影与其他国家电影，为当�
 with st.form("unified_recommendation_controls"):
     c1, c2 = st.columns(2)
     top_n = c1.slider("推荐数量", 2, int(config["max_top_n"]), int(config["default_top_n"]))
-    region = c2.selectbox("推荐范围", ["全部", "中国电影", "其他国家和地区"])
+    genre = c2.selectbox("电影类型", ["全部", *unified_genres()])
     st.form_submit_button("生成推荐", type="primary")
 
 interactions = get_interactions(profile_key)
@@ -26,11 +26,11 @@ with st.spinner("正在计算预测评分并生成推荐理由……"):
         user_id=user_id,
         interactions=interactions,
         top_n=int(top_n),
-        region=region,
+        genre=genre,
     )
 
 if recommendations.empty:
-    st.info("当前条件下没有可推荐的电影，请切换推荐范围。")
+    st.info("当前类型下没有可推荐的电影，请切换电影类型。")
     st.stop()
 
 china_count = int((recommendations["model_space"] == "china").sum())
@@ -41,7 +41,7 @@ for rank, row in enumerate(recommendations.itertuples(index=False), start=1):
     with st.container(border=True):
         title_col, score_col = st.columns([4, 1])
         title_col.subheader(f"{rank}. {row.title_zh}")
-        title_col.caption(f"{row.origin} · 评分模型：{row.model_label}")
+        title_col.caption(f"{row.origin} · {row.category} · 评分模型：{row.model_label}")
         score_col.metric("推荐分", f"{float(row.final_score):.2f}")
         st.markdown("**推荐理由**")
         for reason in row.reasons:

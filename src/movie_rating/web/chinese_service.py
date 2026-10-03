@@ -34,7 +34,7 @@ def load_chinese_rated_catalog(root: str = str(PROJECT_ROOT)) -> pd.DataFrame:
     frame = pd.read_csv(path, encoding="utf-8-sig")
     required = {
         "catalog_id", "cn_movie_index", "title_zh", "title_en", "release_year",
-        "origins", "languages", "wikidata_id", "imdb_id", "source_url",
+        "origins", "languages", "genres", "wikidata_id", "imdb_id", "source_url",
     }
     if not required.issubset(frame.columns) or len(frame) < 100:
         raise ValueError("中国电影训练目录字段或规模异常")

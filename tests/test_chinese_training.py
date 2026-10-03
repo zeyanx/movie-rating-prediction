@@ -27,6 +27,8 @@ class ChineseTrainingTests(unittest.TestCase):
         )
         self.assertEqual(len(catalog), 300)
         self.assertTrue(catalog["catalog_id"].is_unique)
+        self.assertIn("genres", catalog.columns)
+        self.assertTrue(catalog["genres"].fillna("").str.len().gt(0).all())
         self.assertEqual(summary["ratings"], 55_483)
         self.assertEqual(summary["users"], 5_973)
 

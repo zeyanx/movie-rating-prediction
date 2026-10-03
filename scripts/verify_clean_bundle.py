@@ -30,7 +30,7 @@ def main() -> int:
         raise AssertionError("首次启动生成的数据规模异常")
     localizations = get_movie_localizations()
     chinese_catalog = get_chinese_movies()
-    if (len(localizations), len(chinese_catalog)) != (80, 48):
+    if (len(localizations), len(chinese_catalog)) != (1_324, 48):
         raise AssertionError("中文电影资料层规模异常")
     if search_movies("玩具总动员", limit=10)["movie_id"].astype(int).tolist() != [1]:
         raise AssertionError("MovieLens中文检索失败")

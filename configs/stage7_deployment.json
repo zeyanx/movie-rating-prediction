@@ -10,7 +10,7 @@
   "official_dataset_md5": "0e33842e24a9c977be4e0107933c0723",
   "runtime_data_policy": "应用首次启动时从GroupLens官方地址下载、校验并转换；原始数据不纳入公开仓库",
   "feedback_backend": "sqlite_ephemeral_on_community_cloud",
-  "chinese_catalog_policy": "网页统一展示300部中国电影和80部具有中文译名的其他国家电影；按影片来源选择对应评分模型，并在推荐层混排结果，不合并两套训练主键",
+  "chinese_catalog_policy": "网页统一展示300部中国电影和1324部具有中文译名的其他国家电影；两类影片统一按动作、冒险、喜剧等题材筛选，按影片来源选择对应评分模型，并在推荐层混排结果，不合并两套训练主键",
   "deployment_branch": "main",
   "deployment_commit": "f1e5808",
   "repository_url": "https://github.com/zeyanx/movie-rating-prediction",

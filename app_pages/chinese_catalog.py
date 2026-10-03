@@ -11,6 +11,7 @@ from movie_rating.web.unified_service import (
     recommend_unified_movies,
     search_unified_catalog,
     unified_catalog,
+    unified_genres,
 )
 
 
@@ -29,20 +30,20 @@ c4.metric("当前用户", f"#{user_id}")
 with st.form("unified_movie_filters"):
     f1, f2, f3 = st.columns([2, 1, 2])
     query = f1.text_input("搜索电影", placeholder="输入中文片名，例如：流浪地球、玩具总动员")
-    region = f2.selectbox("电影地区", ["全部", "中国电影", "其他国家和地区"])
+    genre = f2.selectbox("电影类型", ["全部", *unified_genres()])
     years = f3.slider("上映年份", 1930, 2019, (1930, 2019))
     st.form_submit_button("查找电影", type="primary")
 
 matches = search_unified_catalog(
     query=query,
-    region=region,
+    genre=genre,
     start_year=int(years[0]),
     end_year=int(years[1]),
     limit=500,
 )
 st.caption(f"找到 {len(matches)} 部电影")
 if matches.empty:
-    st.info("当前条件下没有匹配电影，请调整片名、地区或年份。")
+    st.info("当前条件下没有匹配电影，请调整片名、类型或年份。")
     st.stop()
 
 display = matches[[
@@ -53,7 +54,7 @@ st.dataframe(
     display.rename(columns={
         "title_zh": "电影名称",
         "origin": "国家或地区",
-        "category": "类型或语言",
+        "category": "电影类型",
         "release_year": "上映年份",
         "rating_count": "历史评分数",
         "rating_mean": "历史平均分",
@@ -91,12 +92,14 @@ st.subheader("综合推荐")
 recommendation_count = st.slider("推荐数量", 2, 10, 6, key="library_recommendation_count")
 if st.button("生成推荐", key="library_generate_recommendations"):
     with st.spinner("正在综合计算中国电影和其他国家电影……"):
-        recommendations = recommend_unified_movies(user_id, pd.DataFrame(), recommendation_count)
+        recommendations = recommend_unified_movies(
+            user_id, pd.DataFrame(), recommendation_count, genre=genre
+        )
     for rank, row in enumerate(recommendations.itertuples(index=False), start=1):
         with st.container(border=True):
             left, right = st.columns([4, 1])
             left.subheader(f"{rank}. {row.title_zh}")
-            left.caption(f"{row.origin} · {row.model_label}")
+            left.caption(f"{row.origin} · {row.category} · {row.model_label}")
             right.metric("推荐分", f"{float(row.final_score):.2f}")
             for reason in row.reasons[:2]:
                 st.write(f"- {reason}")
