@@ -35,6 +35,17 @@ class Stage6AppTests(unittest.TestCase):
 
     def test_recommendations(self) -> None:
         self._assert_page("app_pages/recommendations.py", "个性化推荐")
+        first_titles = [item.value for item in self.app.subheader]
+        refresh_button = next(
+            button for button in self.app.button if button.label == "换一批推荐"
+        )
+        refresh_button.click().run(timeout=60)
+        self.assertEqual(len(self.app.exception), 0, [item.value for item in self.app.exception])
+        second_titles = [item.value for item in self.app.subheader]
+        self.assertNotEqual(first_titles, second_titles)
+        self.assertTrue(
+            any("当前为第 2 批" in item.value for item in self.app.caption)
+        )
 
     def test_my_movies(self) -> None:
         self._assert_page("app_pages/my_movies.py", "我的观影")

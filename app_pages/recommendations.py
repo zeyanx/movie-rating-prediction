@@ -21,7 +21,26 @@ with st.form("unified_recommendation_controls"):
     c1, c2 = st.columns(2)
     top_n = c1.slider("推荐数量", 2, int(config["max_top_n"]), int(config["default_top_n"]))
     genre = c2.selectbox("电影类型", ["全部", *unified_genres()])
-    st.form_submit_button("生成推荐", type="primary")
+    generate_col, refresh_col = st.columns(2)
+    generate_clicked = generate_col.form_submit_button(
+        "生成推荐", type="primary", width="stretch"
+    )
+    refresh_clicked = refresh_col.form_submit_button(
+        "换一批推荐", width="stretch"
+    )
+
+# 推荐页码保存在当前浏览器会话中；切换用户、数量或类型时自动回到首批。
+refresh_signature = f"{profile_key}|{user_id}|{int(top_n)}|{genre}"
+if st.session_state.get("recommendation_refresh_signature") != refresh_signature:
+    st.session_state["recommendation_refresh_signature"] = refresh_signature
+    st.session_state["recommendation_refresh_page"] = 0
+elif generate_clicked:
+    st.session_state["recommendation_refresh_page"] = 0
+elif refresh_clicked:
+    st.session_state["recommendation_refresh_page"] = (
+        int(st.session_state.get("recommendation_refresh_page", 0)) + 1
+    )
+refresh_page = int(st.session_state.get("recommendation_refresh_page", 0))
 
 interactions = get_interactions(profile_key)
 catalog_interactions = get_catalog_interactions(profile_key)
@@ -32,7 +51,22 @@ with st.spinner("正在计算预测评分并生成推荐理由……"):
         top_n=int(top_n),
         genre=genre,
         catalog_interactions=catalog_interactions,
+        refresh_page=refresh_page,
     )
+
+# 当前筛选条件的候选已翻完时自动回到第一批，避免显示空白页面。
+if recommendations.empty and refresh_page > 0:
+    st.session_state["recommendation_refresh_page"] = 0
+    refresh_page = 0
+    recommendations = recommend_unified_movies(
+        user_id=user_id,
+        interactions=interactions,
+        top_n=int(top_n),
+        genre=genre,
+        catalog_interactions=catalog_interactions,
+        refresh_page=0,
+    )
+    st.info("当前筛选条件下的候选已经浏览完，已回到第一批推荐。")
 
 if recommendations.empty:
     st.info("当前类型下没有可推荐的电影，请切换电影类型。")
@@ -41,6 +75,7 @@ if recommendations.empty:
 china_count = int((recommendations["model_space"] == "china").sum())
 international_count = int((recommendations["model_space"] == "international").sum())
 st.caption(f"本次推荐包含中国电影 {china_count} 部、其他国家电影 {international_count} 部。")
+st.caption(f"当前为第 {refresh_page + 1} 批；点击“换一批推荐”可继续刷新。")
 
 for rank, row in enumerate(recommendations.itertuples(index=False), start=1):
     with st.container(border=True):

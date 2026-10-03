@@ -219,6 +219,7 @@ def _international_recommendations(
     count: int,
     genre: str,
     root: str,
+    offset: int = 0,
 ) -> pd.DataFrame:
     config = load_app_config()
     train = load_train_ratings(root)
@@ -226,7 +227,7 @@ def _international_recommendations(
     stats = movie_statistics(root, int(config["popularity_prior_count"]))
     candidates, _ = build_candidate_frame(
         user_id, stats, train, interactions,
-        minimum_popularity_count=0, top_n=max(count, 1),
+        minimum_popularity_count=0, top_n=max(count + offset, 1),
     )
     candidates = candidates[candidates["title_zh"].ne("")].reset_index(drop=True)
     if genre and genre != "全部":
@@ -252,10 +253,11 @@ def _international_recommendations(
     scored["category"] = scored["genres"].map(translate_genres)
     scored["title_zh"] = scored["title_zh"].astype(str)
     scored["model_label"] = "神经网络"
-    return scored.sort_values(
+    ranked = scored.sort_values(
         ["final_score", "mlp_prediction", "rating_count"],
         ascending=[False, False, False], kind="mergesort",
-    ).head(count).reset_index(drop=True)
+    ).reset_index(drop=True)
+    return ranked.iloc[offset:offset + count].reset_index(drop=True)
 
 
 def _chinese_recommendations(
@@ -264,6 +266,7 @@ def _chinese_recommendations(
     genre: str,
     root: str,
     catalog_interactions: pd.DataFrame | None = None,
+    offset: int = 0,
 ) -> pd.DataFrame:
     catalog = load_chinese_rated_catalog(root).copy()
     if catalog_interactions is not None and not catalog_interactions.empty:
@@ -304,10 +307,11 @@ def _chinese_recommendations(
         ],
         axis=1,
     )
-    return result.sort_values(
+    ranked = result.sort_values(
         ["final_score", "rating_count", "cn_movie_index"],
         ascending=[False, False, True], kind="mergesort",
-    ).head(count).reset_index(drop=True)
+    ).reset_index(drop=True)
+    return ranked.iloc[offset:offset + count].reset_index(drop=True)
 
 
 def recommend_unified_movies(
@@ -318,20 +322,42 @@ def recommend_unified_movies(
     region: str = "全部",
     catalog_interactions: pd.DataFrame | None = None,
     root: str = str(PROJECT_ROOT),
+    refresh_page: int = 0,
 ) -> pd.DataFrame:
-    """混排中国电影和其他国家电影，并保证“全部”结果包含两类来源。"""
+    """混排两类电影；refresh_page用于稳定地切换到下一批候选。"""
     n = int(top_n)
     if not 1 <= n <= 20:
         raise ValueError("推荐数量必须位于1至20")
+    page = int(refresh_page)
+    if page < 0:
+        raise ValueError("刷新页码不能为负数")
     if region == "中国电影":
-        return _chinese_recommendations(user_id, n, genre, root, catalog_interactions)
+        return _chinese_recommendations(
+            user_id, n, genre, root, catalog_interactions, offset=page * n
+        )
     if region == "其他国家和地区":
-        return _international_recommendations(user_id, interactions, n, genre, root)
+        return _international_recommendations(
+            user_id, interactions, n, genre, root, offset=page * n
+        )
 
     chinese_count = max(1, n // 2)
     international_count = max(1, n - chinese_count)
-    chinese = _chinese_recommendations(user_id, n, genre, root, catalog_interactions)
-    international = _international_recommendations(user_id, interactions, n, genre, root)
+    chinese = _chinese_recommendations(
+        user_id,
+        n,
+        genre,
+        root,
+        catalog_interactions,
+        offset=page * chinese_count,
+    )
+    international = _international_recommendations(
+        user_id,
+        interactions,
+        n,
+        genre,
+        root,
+        offset=page * international_count,
+    )
 
     # 优先保持两类来源均衡；某类候选不足时由另一类自动补齐。
     selected_chinese = chinese.head(chinese_count)

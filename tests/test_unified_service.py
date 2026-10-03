@@ -65,6 +65,18 @@ class UnifiedServiceTests(unittest.TestCase):
         self.assertEqual(len(result), 6)
         self.assertTrue(result["category"].str.split("、").map(lambda x: "冒险" in x).all())
 
+    def test_refresh_page_returns_a_new_batch(self) -> None:
+        first = recommend_unified_movies(1, pd.DataFrame(), top_n=6, refresh_page=0)
+        second = recommend_unified_movies(1, pd.DataFrame(), top_n=6, refresh_page=1)
+        self.assertEqual(len(first), 6)
+        self.assertEqual(len(second), 6)
+        self.assertTrue(set(first["item_key"]).isdisjoint(set(second["item_key"])))
+        self.assertEqual(set(second["model_space"]), {"china", "international"})
+
+    def test_refresh_page_rejects_negative_values(self) -> None:
+        with self.assertRaises(ValueError):
+            recommend_unified_movies(1, pd.DataFrame(), top_n=6, refresh_page=-1)
+
     def test_watched_chinese_movie_is_excluded(self) -> None:
         baseline = recommend_unified_movies(1, pd.DataFrame(), top_n=6)
         selected = baseline[baseline["model_space"] == "china"].iloc[0]
