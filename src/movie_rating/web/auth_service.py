@@ -173,6 +173,24 @@ def _render_login(client: Client) -> None:
                 except Exception as exc:
                     st.error(_auth_message(exc))
 
+        with st.expander("没有收到确认邮件？"):
+            st.caption("请先检查垃圾邮件，并与上次发送间隔至少60秒。")
+            with st.form("account_resend_confirmation_form"):
+                resend_email = st.text_input("注册邮箱", key="resend_signup_email")
+                resend_submitted = st.form_submit_button("重新发送确认邮件")
+            if resend_submitted:
+                if not _valid_email(resend_email):
+                    st.error("请输入有效的注册邮箱。")
+                else:
+                    try:
+                        client.auth.resend({
+                            "type": "signup",
+                            "email": resend_email.strip(),
+                        })
+                        st.success("确认邮件已重新发送，请检查收件箱或垃圾邮件。")
+                    except Exception as exc:
+                        st.error(_auth_message(exc))
+
     st.info("密码由Supabase Auth处理，本应用不会读取或保存明文密码。")
 
 
