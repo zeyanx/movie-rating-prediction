@@ -27,6 +27,7 @@ data/imports/youku_mplug_movie_candidates.summary.json
 data/raw/*.csv
 data/processed/*.csv
 data/chinese_training/
+data/ml25m_runtime/
 reports/**/test_predictions.csv
 reports/stage5/unified_test_predictions.csv
 reports/**/*.html

@@ -509,3 +509,24 @@ python scripts/build_chinese_ratings_dataset.py --archive D:\Downloads\ml-25m.zi
 训练模型位于`models/chinese/`，实验报告位于`reports/chinese_training/`。网页“电影库”将300部中国电影与1,324部具有中文译名的其他国家电影合并展示，所有影片按“冒险、喜剧”等题材统一筛选，并按影片来源自动选择评分模型；“个性化推荐”会在所选题材内混排两类影片并输出中文推荐理由。模型使用`st.cache_resource`加载。
 
 MovieLens 25M原始包、评分子集和原始用户/影片ID均被`.gitignore`排除，不在公开仓库中再分发。公开的`data/catalog/chinese_rated_movies.csv`只包含Wikidata CC0字段以及本项目生成的内部模型索引。MovieLens 25M仅用于非商业课程研究，使用者须阅读GroupLens官方README、遵守不得擅自再分发等许可条件并在论文中致谢。
+
+## MovieLens 25M 大型电影库
+
+“电影库”页面现可在同一个入口中启用 MovieLens 25M。启用后可统一检索 62,423 部电影，并按中文类型、片名和上映年份筛选；页面展示基于 25,000,095 条匿名评分计算的评分数、历史均分、预测分和推荐理由。已有模型能够通过片名年份或 IMDb 映射对齐的 1,293 部国际电影与 300 部中国电影继续调用原训练模型，其余影片使用“贝叶斯历史评分 + 当前账户类型偏好”的个性化统计预测，页面会明确标注模型类型。
+
+本地准备命令：
+
+```bash
+conda activate movie
+python scripts/download_movielens_25m.py
+```
+
+网络不可用时，从 GroupLens 官方地址手动下载 ZIP 后运行：
+
+```bash
+python scripts/download_movielens_25m.py --archive "D:\Downloads\ml-25m.zip"
+```
+
+脚本固定使用官方地址和官方 MD5 `6b51fb2759a8657d3bfcbfc42b592ada`，分块读取评分文件以控制内存，并验证 62,423 部电影、25,000,095 条评分、162,541 名用户及 0.5 至 5.0 的评分范围。生成的快速检索目录位于 `data/ml25m_runtime/`，原始 ZIP 位于 `data/external/ml-25m-source/`；两者都被 `.gitignore` 排除，可随时由脚本重新生成。
+
+公开部署中不会随 Git 仓库再分发 MovieLens 原始数据。首次使用大型库时，由用户在“电影库”页面点击按钮，从 GroupLens 官方服务器下载、核对 MD5 并生成运行时缓存。数据来源与许可说明见 [MovieLens 25M 数据页](https://grouplens.org/datasets/movielens/25m/) 和 [官方 README](https://files.grouplens.org/datasets/movielens/ml-25m-README.html)；该数据仅按官方条款用于研究用途。

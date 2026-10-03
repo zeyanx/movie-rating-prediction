@@ -17,6 +17,12 @@ from .chinese_service import (
 from .config import PROJECT_ROOT, load_app_config
 from .data_service import build_prediction_frame, load_raw_tables, load_train_ratings, movie_statistics
 from .model_service import predict_with_models
+from .ml25m_service import (
+    load_ml25m_catalog,
+    ml25m_catalog_ready,
+    predict_ml25m_item,
+    recommend_ml25m_movies,
+)
 from .recommendation import (
     build_candidate_frame,
     compute_user_genre_profile,
@@ -172,6 +178,71 @@ def unified_genres(root: str = str(PROJECT_ROOT)) -> list[str]:
         if genre and genre != "未分类"
     }
     return sorted(values)
+
+
+@st.cache_data(show_spinner=False)
+def expanded_catalog(root: str = str(PROJECT_ROOT)) -> pd.DataFrame:
+    """返回MovieLens 25M完整目录；对齐项保留现有训练模型空间。"""
+    catalog = load_ml25m_catalog(root).copy()
+    catalog["category"] = catalog["genres"].map(translate_genres)
+    return catalog.sort_values(
+        ["release_year", "title_zh"], ascending=[False, True], na_position="last"
+    ).reset_index(drop=True)
+
+
+def search_expanded_catalog(
+    query: str = "",
+    genre: str = "全部",
+    start_year: int | None = None,
+    end_year: int | None = None,
+    limit: int = 500,
+    root: str = str(PROJECT_ROOT),
+) -> pd.DataFrame:
+    """在62,423部电影中按片名、类型和年份统一检索。"""
+    if not 1 <= int(limit) <= 500:
+        raise ValueError("结果数量必须位于1至500")
+    movies = expanded_catalog(root).copy()
+    clean_query = str(query).strip()
+    if clean_query:
+        movies = movies[movies["search_title"].str.contains(clean_query, case=False, regex=False, na=False)]
+    if genre and genre != "全部":
+        movies = movies[movies["category"].str.split("、").map(lambda values: genre in values)]
+    if start_year is not None:
+        movies = movies[movies["release_year"] >= int(start_year)]
+    if end_year is not None:
+        movies = movies[movies["release_year"] <= int(end_year)]
+    return movies.head(int(limit)).reset_index(drop=True)
+
+
+def expanded_genres(root: str = str(PROJECT_ROOT)) -> list[str]:
+    """返回大型目录中的中文类型选项。"""
+    values = {
+        genre
+        for text in expanded_catalog(root)["category"].fillna("")
+        for genre in str(text).split("、")
+        if genre and genre != "未分类"
+    }
+    return sorted(values)
+
+
+def predict_expanded_item(
+    user_id: int, item_key: str, root: str = str(PROJECT_ROOT)
+) -> dict[str, Any]:
+    """能对齐的影片调用训练模型，其余影片调用25M个性化统计模型。"""
+    matches = expanded_catalog(root)
+    matches = matches[matches["item_key"] == str(item_key)]
+    if matches.empty:
+        raise ValueError(f"大型电影库中不存在：{item_key}")
+    movie = matches.iloc[0]
+    if movie["model_space"] == "ml25m":
+        return predict_ml25m_item(user_id, item_key, root)
+    routed_key = f"{movie['model_space']}:{int(movie['local_id'])}"
+    return predict_unified_item(user_id, routed_key, root)
+
+
+def large_catalog_ready(root: str = str(PROJECT_ROOT)) -> bool:
+    """供页面轻量判断大型目录是否已经生成。"""
+    return ml25m_catalog_ready(root)
 
 
 def predict_unified_item(
