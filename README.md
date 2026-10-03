@@ -2,7 +2,7 @@
 
 本项目使用 MovieLens 100K 数据，对集成学习与神经网络评分预测方法进行对比，并提供可公开访问的 Streamlit 电影评分预测和个性化推荐系统。
 
-第1至第7阶段均已完成：数据治理、固定划分、基线、集成学习、PyTorch MLP、统一实验、六页面网页、公开部署、论文与答辩材料均已验收。
+第1至第7阶段均已完成：数据治理、固定划分、基线、集成学习、PyTorch MLP、统一实验、多页面网页、公开部署、论文与答辩材料均已验收。网页另外提供公开账户、持久化观影记录和账户级个性化推荐。
 
 - GitHub：<https://github.com/zeyanx/movie-rating-prediction>
 - 在线应用：<https://mccr78dsncofymbfxhdwfo.streamlit.app/>
@@ -354,7 +354,7 @@ reports/stage5/stage5_summary.md               阶段总结
 
 ## 11. 第6阶段：Streamlit多页面电影评分与推荐系统
 
-应用入口为`app.py`，使用`st.Page`与`st.navigation`注册首页、电影库、评分预测、个性化推荐、我的观影和模型分析。侧边栏通过统一用户编号切换预测与推荐结果。
+应用入口为`app.py`，使用`st.Page`与`st.navigation`注册首页、电影库、评分预测、个性化推荐、我的观影、账户设置和模型分析。公开模式使用邮箱账户登录；首次登录选择喜欢的题材，系统在匿名训练用户中匹配冷启动参考画像，再结合该账户自己的反馈持续调整推荐。本地未配置账户服务时仍可切换匿名用户进行离线演示。
 
 ### 11.1 主要功能
 
@@ -362,7 +362,8 @@ reports/stage5/stage5_summary.md               阶段总结
 - 电影库：合并300部中国电影和1,324部具有中文译名的其他国家电影，统一按片名、电影类型和年份检索、筛选与评分；
 - 评分预测：自动按影片来源选择对应模型，显示中文模型名称、多模型评分和预测依据；
 - 个性化推荐：中国电影与其他国家电影混合排序，并为每部电影提供至少两条理由；
-- 我的观影：区分固定训练期历史与网页SQLite记录，支持编辑、二次确认删除和内存CSV下载；
+- 我的观影：区分匿名参考画像与账户个人记录，支持持久化保存、编辑、二次确认删除和内存CSV下载；
+- 账户设置：修改昵称和喜欢的电影类型，并重新生成冷启动推荐画像；
 - 模型分析：展示模型指标、运行效率、自助法检验、特征重要性、分段误差和即时多模型预测。
 
 推荐只用固定训练集计算用户画像和电影热度，不读取固定测试集真实评分：
@@ -390,7 +391,7 @@ python -m streamlit run app.py
 python -m streamlit run app.py --server.port 8502
 ```
 
-静态数据和报告使用`st.cache_data`，模型使用`st.cache_resource`。集成模型只有在多模型比较时才延迟加载。SQLite连接不缓存，每次操作使用短连接和参数化SQL。
+静态数据和报告使用`st.cache_data`，模型使用`st.cache_resource`。集成模型只有在多模型比较时才延迟加载。公开模式使用Supabase Auth与PostgreSQL，RLS按账户隔离数据；SQLite仅作为不联网的本地开发后备。
 
 本地反馈保存在`data/app/movie_app.db`，该文件已忽略提交，可删除后重新运行`python scripts/init_app_db.py`生成。数据库记录包含用户/电影、想看或已看、个人评分、喜欢/中立/不喜欢/不感兴趣、备注、保存时预测分和时间。
 
@@ -402,11 +403,13 @@ python -m streamlit run app.py --server.port 8502
 | 模型文件缺失 | 运行`scripts/verify_stage4.py`和`scripts/verify_stage5.py`检查前置产物 |
 | 模型反复加载 | 确认模型加载函数仍使用`st.cache_resource`且路径参数稳定 |
 | 保存反馈后推荐未变化 | 重新生成推荐；最终推荐不做长期缓存，数据库记录会在下次运行时读取 |
-| SQLite提示锁定 | 关闭重复启动的网页进程；应用已使用短连接、WAL和`busy_timeout` |
+| Supabase未配置 | 按`docs/public_accounts_setup.md`创建项目、执行SQL并配置Streamlit Secrets |
+| 注册后不能直接登录 | 默认需要验证邮箱；确认邮件后返回网页登录 |
+| SQLite提示锁定 | 仅本地演示模式会使用SQLite；关闭重复启动的网页进程 |
 | 8501端口占用 | 使用`--server.port 8502`或先关闭旧Streamlit进程 |
 | 网页预测时间特征异常 | 不得用当前时间；系统使用用户训练期最新时间戳或训练集最大时间戳 |
 
-Streamlit Community Cloud文件系统是临时性的；在线反馈在重启、休眠或重新部署后可能丢失。
+公开账户的观影记录保存在Supabase PostgreSQL中，不依赖Streamlit Community Cloud临时文件系统。
 # 第7阶段：公开部署、论文与答辩材料
 
 本阶段把第6阶段网页整理为可部署包。公开仓库**不包含** MovieLens 原始CSV、训练/测试逐行数据和SQLite反馈库；应用首次启动时从 [GroupLens官方地址](https://files.grouplens.org/datasets/movielens/ml-100k.zip) 下载ZIP，核对MD5并生成数据。这样既能复现实验，也避免未经许可重新分发MovieLens数据。
@@ -426,7 +429,7 @@ Streamlit Community Cloud入口为 `app.py`，公开应用为 <https://mccr78dsn
 
 随机森林模型约38 MB，通过Git LFS跟踪。推送前运行 `git lfs install` 和 `git lfs track models/stage3/random_forest.joblib`，并确认远程仓库实际包含LFS对象。模型和数据读取使用Streamlit缓存。
 
-用户观影与反馈保存在 `data/app/movie_app.db`。该数据库仅用于本地/课程演示，Streamlit Cloud重新部署、休眠恢复或实例迁移时可能丢失；真实生产应用应改用带认证的外部持久数据库。
+公开用户通过Supabase Auth注册和登录，观影与反馈保存在带RLS的Supabase PostgreSQL中；本地未配置Supabase时才使用`data/app/movie_app.db`。建表脚本为`supabase/schema.sql`，完整配置见`docs/public_accounts_setup.md`。仓库和Streamlit Cloud中不得保存`service_role`密钥或用户密码。
 
 论文与最终答辩材料见 `docs/`，兼容旧目录的答辩草稿见 `defense/`，部署证据、真实云端截图与验收结果见 `reports/stage7/`。仓库地址、在线地址和已验收提交记录在 `configs/stage7_deployment.json`。
 

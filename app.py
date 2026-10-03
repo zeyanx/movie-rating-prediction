@@ -17,6 +17,7 @@ from movie_rating.web.config import load_app_config
 from movie_rating.web.data_service import load_raw_tables
 from movie_rating.web.database import initialize_database
 from movie_rating.web.runtime_assets import ensure_runtime_assets_cached
+from movie_rating.web.auth_service import authenticate_or_stop, sign_out
 
 
 config = load_app_config()
@@ -38,25 +39,38 @@ except (FileNotFoundError, ValueError, OSError) as exc:
     )
     st.stop()
 
-if "selected_user_id" not in st.session_state:
-    st.session_state["selected_user_id"] = int(config["default_user_id"])
-
 user_ids = users["user_id"].astype(int).tolist()
-current = int(st.session_state["selected_user_id"])
-if current not in user_ids:
-    current = int(config["default_user_id"])
-with st.sidebar:
-    st.header("🎬 电影导航")
-    selected = st.selectbox(
-        "当前用户",
-        user_ids,
-        index=user_ids.index(current),
-        key="sidebar_user_selector",
-        help="切换用户会改变个性化预测、推荐和本地观影记录。",
-    )
-    st.session_state["selected_user_id"] = int(selected)
-    st.session_state["profile_key"] = f"movielens:{int(selected)}"
-    st.caption("切换用户可查看不同的预测与推荐结果")
+account_profile = authenticate_or_stop()
+
+if account_profile:
+    selected = int(account_profile["model_user_id"])
+    st.session_state["selected_user_id"] = selected
+    st.session_state["profile_key"] = str(account_profile["user_id"])
+    with st.sidebar:
+        st.header("🎬 电影导航")
+        st.success(f"你好，{account_profile['display_name']}")
+        st.caption("推荐会结合你的类型偏好和个人反馈持续调整。")
+        if st.button("退出登录", width="stretch"):
+            sign_out()
+            st.rerun()
+else:
+    if "selected_user_id" not in st.session_state:
+        st.session_state["selected_user_id"] = int(config["default_user_id"])
+    current = int(st.session_state["selected_user_id"])
+    if current not in user_ids:
+        current = int(config["default_user_id"])
+    with st.sidebar:
+        st.header("🎬 电影导航")
+        selected = st.selectbox(
+            "当前用户",
+            user_ids,
+            index=user_ids.index(current),
+            key="sidebar_user_selector",
+            help="本地演示模式可切换MovieLens匿名用户。",
+        )
+        st.session_state["selected_user_id"] = int(selected)
+        st.session_state["profile_key"] = f"movielens:{int(selected)}"
+        st.caption("本地演示模式：配置Supabase后将启用公开账户。")
 
 pages = [
     st.Page("app_pages/home.py", title="首页", icon="🏠", default=True),
@@ -64,6 +78,7 @@ pages = [
     st.Page("app_pages/movie_detail.py", title="评分预测", icon="⭐"),
     st.Page("app_pages/recommendations.py", title="个性化推荐", icon="✨"),
     st.Page("app_pages/my_movies.py", title="我的观影", icon="📚"),
+    st.Page("app_pages/account.py", title="账户设置", icon="👤"),
     st.Page("app_pages/model_lab.py", title="模型分析", icon="📊"),
 ]
 

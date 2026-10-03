@@ -5,7 +5,8 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from movie_rating.web.ui import ensure_session_state, page_intro, valid_external_url
+from movie_rating.web.ui import current_user_label, ensure_session_state, page_intro, valid_external_url
+from movie_rating.web.user_store import get_catalog_interactions
 from movie_rating.web.unified_service import (
     predict_unified_item,
     recommend_unified_movies,
@@ -15,7 +16,7 @@ from movie_rating.web.unified_service import (
 )
 
 
-user_id, _ = ensure_session_state()
+user_id, profile_key = ensure_session_state()
 page_intro("电影库", "在同一个电影库中浏览中国电影与其他国家电影，并直接查看预测评分。")
 
 catalog = unified_catalog()
@@ -25,7 +26,7 @@ c1, c2, c3, c4 = st.columns(4)
 c1.metric("电影总数", f"{len(catalog):,}")
 c2.metric("中国电影", f"{china_count:,}")
 c3.metric("其他国家电影", f"{international_count:,}")
-c4.metric("当前用户", f"#{user_id}")
+c4.metric("当前账户", current_user_label(user_id))
 
 with st.form("unified_movie_filters"):
     f1, f2, f3 = st.columns([2, 1, 2])
@@ -93,7 +94,8 @@ recommendation_count = st.slider("推荐数量", 2, 10, 6, key="library_recommen
 if st.button("生成推荐", key="library_generate_recommendations"):
     with st.spinner("正在综合计算中国电影和其他国家电影……"):
         recommendations = recommend_unified_movies(
-            user_id, pd.DataFrame(), recommendation_count, genre=genre
+            user_id, pd.DataFrame(), recommendation_count, genre=genre,
+            catalog_interactions=get_catalog_interactions(profile_key),
         )
     for rank, row in enumerate(recommendations.itertuples(index=False), start=1):
         with st.container(border=True):

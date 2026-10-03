@@ -258,8 +258,19 @@ def _international_recommendations(
     ).head(count).reset_index(drop=True)
 
 
-def _chinese_recommendations(user_id: int, count: int, genre: str, root: str) -> pd.DataFrame:
+def _chinese_recommendations(
+    user_id: int,
+    count: int,
+    genre: str,
+    root: str,
+    catalog_interactions: pd.DataFrame | None = None,
+) -> pd.DataFrame:
     catalog = load_chinese_rated_catalog(root).copy()
+    if catalog_interactions is not None and not catalog_interactions.empty:
+        blocked = catalog_interactions[catalog_interactions["status"] == "watched"]
+        catalog = catalog[
+            ~catalog["catalog_id"].isin(blocked["catalog_id"].astype(str))
+        ].reset_index(drop=True)
     if genre and genre != "全部":
         catalog = catalog[
             catalog["genres"].map(translate_genres).str.split("、").map(
@@ -305,6 +316,7 @@ def recommend_unified_movies(
     top_n: int = 10,
     genre: str = "全部",
     region: str = "全部",
+    catalog_interactions: pd.DataFrame | None = None,
     root: str = str(PROJECT_ROOT),
 ) -> pd.DataFrame:
     """混排中国电影和其他国家电影，并保证“全部”结果包含两类来源。"""
@@ -312,13 +324,13 @@ def recommend_unified_movies(
     if not 1 <= n <= 20:
         raise ValueError("推荐数量必须位于1至20")
     if region == "中国电影":
-        return _chinese_recommendations(user_id, n, genre, root)
+        return _chinese_recommendations(user_id, n, genre, root, catalog_interactions)
     if region == "其他国家和地区":
         return _international_recommendations(user_id, interactions, n, genre, root)
 
     chinese_count = max(1, n // 2)
     international_count = max(1, n - chinese_count)
-    chinese = _chinese_recommendations(user_id, n, genre, root)
+    chinese = _chinese_recommendations(user_id, n, genre, root, catalog_interactions)
     international = _international_recommendations(user_id, interactions, n, genre, root)
 
     # 优先保持两类来源均衡；某类候选不足时由另一类自动补齐。

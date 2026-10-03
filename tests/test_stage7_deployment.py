@@ -74,15 +74,23 @@ class DeploymentComplianceTest(unittest.TestCase):
         )
         self.assertNotIn("test_ratings.csv", online_source)
 
-    def test_manifest_and_five_pages(self) -> None:
+    def test_manifest_and_pages(self) -> None:
         manifest = json.loads((ROOT / "reports/stage7/deployment_manifest.json").read_text(encoding="utf-8"))
         self.assertTrue(all(item["purpose"] for item in manifest["files"]))
         app = (ROOT / "app.py").read_text(encoding="utf-8")
         for page in [
             "home.py", "movie_detail.py", "chinese_catalog.py",
-            "recommendations.py", "my_movies.py", "model_lab.py",
+            "recommendations.py", "my_movies.py", "account.py", "model_lab.py",
         ]:
             self.assertIn(page, app)
+
+    def test_public_account_security_assets(self) -> None:
+        schema = (ROOT / "supabase" / "schema.sql").read_text(encoding="utf-8")
+        for table in ["profiles", "account_interactions", "account_catalog_interactions"]:
+            self.assertIn(f"alter table public.{table} enable row level security", schema)
+        self.assertGreaterEqual(schema.count("(select auth.uid())"), 12)
+        self.assertIn("supabase==", (ROOT / "requirements.txt").read_text(encoding="utf-8"))
+        self.assertTrue((ROOT / ".streamlit" / "secrets.example.toml").is_file())
 
 
 if __name__ == "__main__":

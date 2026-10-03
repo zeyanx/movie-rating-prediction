@@ -55,7 +55,7 @@ def main() -> int:
     required_files = [
         "app.py", "configs/stage6_app.json", ".streamlit/config.toml",
         "app_pages/home.py", "app_pages/movie_detail.py", "app_pages/recommendations.py",
-        "app_pages/my_movies.py", "app_pages/model_lab.py",
+        "app_pages/my_movies.py", "app_pages/account.py", "app_pages/model_lab.py",
         "src/movie_rating/web/__init__.py", "src/movie_rating/web/config.py",
         "src/movie_rating/web/data_service.py", "src/movie_rating/web/model_service.py",
         "src/movie_rating/web/recommendation.py", "src/movie_rating/web/database.py",
@@ -74,7 +74,7 @@ def main() -> int:
     app_source = (ROOT / "app.py").read_text(encoding="utf-8")
     for token in ["st.navigation", "st.Page", ".run()", "selected_user_id", "profile_key"]:
         require(token in app_source, f"app.py缺少：{token}")
-    for page in ["home.py", "movie_detail.py", "recommendations.py", "my_movies.py", "model_lab.py"]:
+    for page in ["home.py", "movie_detail.py", "recommendations.py", "my_movies.py", "account.py", "model_lab.py"]:
         require(page in app_source, f"入口未注册页面：{page}")
     require(not (ROOT / "pages").exists(), "不应存在与st.navigation冲突的根pages目录")
 

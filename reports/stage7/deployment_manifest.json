@@ -1,5 +1,5 @@
 {
-  "created_at": "2026-10-02T12:21:27.955652+00:00",
+  "created_at": "2026-10-03T08:03:20.659362+00:00",
   "entrypoint": "app.py",
   "official_dataset_url": "https://files.grouplens.org/datasets/movielens/ml-100k.zip",
   "runtime_generated": [
@@ -16,8 +16,8 @@
   "files": [
     {
       "path": "app.py",
-      "bytes": 2778,
-      "sha256": "7fa233504fac723e8e0db9574f9ad699d6dd5eb1ada291d9122133d68e2ef2e3",
+      "bytes": 3472,
+      "sha256": "9fb18d6575a5b5936d37528fc2835c66f6ec554c31c62b64825ce16f2da73e43",
       "should_be_tracked": true,
       "git_tracked": true,
       "git_lfs_required": false,
@@ -25,8 +25,8 @@
     },
     {
       "path": "requirements.txt",
-      "bytes": 181,
-      "sha256": "a1bfe8fc6fc1019551d9b72dc2dcacfaed93733b688ebf39b3c0e2c3975e1da8",
+      "bytes": 198,
+      "sha256": "9242d3c343c943619829ff9e35b468869669713e8e1bdb8821bc86028ca7ce5f",
       "should_be_tracked": true,
       "git_tracked": true,
       "git_lfs_required": false,
@@ -34,12 +34,30 @@
     },
     {
       "path": "conda/environment.yml",
-      "bytes": 275,
-      "sha256": "229ff83c407aa005271c3635c0c0960dba9c7cb1b152bd58fef354e5689873c8",
+      "bytes": 300,
+      "sha256": "d33e15ff1910a6f3d15206c5ff8b8e6cb4ab81bc886d9f536b23d913be8d741b",
       "should_be_tracked": true,
       "git_tracked": true,
       "git_lfs_required": false,
       "purpose": "Windows本地Conda复现环境"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "bytes": 5978,
+      "sha256": "2c3dfd823dfbc2ddd796891d959749156109896f67b4a5e5df43a759609e9eef",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "公开账户数据库结构与RLS策略"
+    },
+    {
+      "path": ".streamlit/secrets.example.toml",
+      "bytes": 171,
+      "sha256": "0ca413eab3566c330b52c5ab9525808afafdee8b6217c97eeefe8bcfa3368eb9",
+      "should_be_tracked": true,
+      "git_tracked": true,
+      "git_lfs_required": false,
+      "purpose": "无真实密钥的账户配置模板"
     },
     {
       "path": "models/global_mean_baseline.joblib",
@@ -250,8 +268,8 @@
     },
     {
       "path": "data/catalog/movie_localizations.csv",
-      "bytes": 4619,
-      "sha256": "d9f94d138fd9bb95a82b33717bdb98a4aa90fb5269847a482a2388943f3b3834",
+      "bytes": 96319,
+      "sha256": "1741c712ed69c9870aa9828d4843815730a9f74a2774b20115af4c0a3ab5641b",
       "should_be_tracked": true,
       "git_tracked": true,
       "git_lfs_required": false,
@@ -268,13 +286,13 @@
     },
     {
       "path": "data/catalog/chinese_rated_movies.csv",
-      "bytes": 40520,
-      "sha256": "b54aa59772aa78a3d2f779b3f2b12b15f4a938582a5e5a979780e26e1373b3ff",
+      "bytes": 45629,
+      "sha256": "846a267f272053c1f4039ef2ecf4bdc5c18fc5a74bac374af885af336201ee43",
       "should_be_tracked": true,
       "git_tracked": true,
       "git_lfs_required": false,
       "purpose": "Wikidata CC0中国电影训练目录"
     }
   ],
-  "total_bytes": 79227876
+  "total_bytes": 79331570
 }

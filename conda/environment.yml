@@ -13,3 +13,4 @@ dependencies:
       - streamlit==1.64.0
       - plotly==7.1.0
       - joblib==1.6.0
+      - supabase==2.32.0

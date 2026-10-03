@@ -5,8 +5,11 @@ from __future__ import annotations
 import streamlit as st
 
 from movie_rating.web.config import load_app_config
-from movie_rating.web.database import get_interactions, upsert_interaction
-from movie_rating.web.ui import ensure_session_state, page_intro
+from movie_rating.web.user_store import (
+    get_catalog_interactions, get_interactions,
+    upsert_catalog_interaction, upsert_interaction,
+)
+from movie_rating.web.ui import account_mode, ensure_session_state, page_intro
 from movie_rating.web.unified_service import recommend_unified_movies, unified_genres
 
 
@@ -21,12 +24,14 @@ with st.form("unified_recommendation_controls"):
     st.form_submit_button("生成推荐", type="primary")
 
 interactions = get_interactions(profile_key)
+catalog_interactions = get_catalog_interactions(profile_key)
 with st.spinner("正在计算预测评分并生成推荐理由……"):
     recommendations = recommend_unified_movies(
         user_id=user_id,
         interactions=interactions,
         top_n=int(top_n),
         genre=genre,
+        catalog_interactions=catalog_interactions,
     )
 
 if recommendations.empty:
@@ -47,7 +52,6 @@ for rank, row in enumerate(recommendations.itertuples(index=False), start=1):
         for reason in row.reasons:
             st.write(f"- {reason}")
 
-        # 其他国家电影沿用现有观影反馈表；中国电影推荐仍保持只读，避免混用两套影片主键。
         if row.model_space == "international":
             b1, b2, b3, b4 = st.columns(4)
             actions = [
@@ -67,5 +71,13 @@ for rank, row in enumerate(recommendations.itertuples(index=False), start=1):
                         feedback=feedback,
                         predicted_rating=float(row.mlp_prediction),
                     )
+                    st.toast(f"已保存：{row.title_zh} · {label}")
+                    st.rerun()
+        elif account_mode():
+            b1, b2 = st.columns(2)
+            actions = [(b1, "加入想看", "want_to_watch"), (b2, "标记已看", "watched")]
+            for column, label, status in actions:
+                if column.button(label, key=f"china_{label}_{row.catalog_id}", width="stretch"):
+                    upsert_catalog_interaction(profile_key, str(row.catalog_id), status)
                     st.toast(f"已保存：{row.title_zh} · {label}")
                     st.rerun()

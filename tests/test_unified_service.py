@@ -65,6 +65,15 @@ class UnifiedServiceTests(unittest.TestCase):
         self.assertEqual(len(result), 6)
         self.assertTrue(result["category"].str.split("、").map(lambda x: "冒险" in x).all())
 
+    def test_watched_chinese_movie_is_excluded(self) -> None:
+        baseline = recommend_unified_movies(1, pd.DataFrame(), top_n=6)
+        selected = baseline[baseline["model_space"] == "china"].iloc[0]
+        records = pd.DataFrame([{"catalog_id": selected["catalog_id"], "status": "watched"}])
+        refreshed = recommend_unified_movies(
+            1, pd.DataFrame(), top_n=6, catalog_interactions=records
+        )
+        self.assertNotIn(selected["catalog_id"], refreshed["catalog_id"].dropna().tolist())
+
 
 if __name__ == "__main__":
     unittest.main()

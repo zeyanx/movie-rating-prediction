@@ -7,16 +7,19 @@ import plotly.express as px
 import streamlit as st
 
 from movie_rating.web.data_service import get_user_history, movie_statistics
-from movie_rating.web.database import (
+from movie_rating.web.user_store import (
     delete_catalog_interaction, delete_interaction, get_catalog_interactions,
     get_interactions, upsert_catalog_interaction, upsert_interaction,
 )
 from movie_rating.web.recommendation import compute_user_genre_profile
-from movie_rating.web.ui import FEEDBACK_LABELS, STATUS_LABELS, ensure_session_state, page_intro
+from movie_rating.web.ui import (
+    FEEDBACK_LABELS, STATUS_LABELS, account_mode, current_user_label,
+    ensure_session_state, page_intro,
+)
 
 
 user_id, profile_key = ensure_session_state()
-page_intro("我的观影", "集中查看历史评分、想看电影、已看电影和个人偏好。")
+page_intro("我的观影", "集中查看个人想看、已看、评分反馈和推荐偏好。")
 
 history = get_user_history(user_id)
 local = get_interactions(profile_key)
@@ -28,16 +31,18 @@ local_display = local.merge(
 catalog_local = get_catalog_interactions(profile_key)
 
 c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("训练期评分", len(history))
-c2.metric("训练期均分", f"{history['rating'].mean():.2f}" if not history.empty else "—")
+c1.metric("参考画像评分" if account_mode() else "训练期评分", len(history))
+c2.metric("参考画像均分" if account_mode() else "训练期均分", f"{history['rating'].mean():.2f}" if not history.empty else "—")
 c3.metric("想看", int((local.get("status", pd.Series(dtype=str)) == "want_to_watch").sum()))
 c4.metric("已看", int((local.get("status", pd.Series(dtype=str)) == "watched").sum()))
 c5.metric("扩展库记录", len(catalog_local))
 
 history_tab, local_tab, catalog_tab, preference_tab = st.tabs(
-    ["历史评分", "我的电影", "中国电影记录", "类型偏好"]
+    ["推荐参考" if account_mode() else "历史评分", "我的电影", "中国电影记录", "类型偏好"]
 )
 with history_tab:
+    if account_mode():
+        st.info("这里展示的是根据注册偏好匹配的匿名参考画像，并不是你的个人观影历史。")
     if history.empty:
         st.info("该用户在固定训练集中没有历史评分。")
     else:
@@ -68,7 +73,7 @@ with local_tab:
         st.download_button(
             "下载当前网页记录CSV",
             data=display.to_csv(index=False).encode("utf-8-sig"),
-            file_name=f"用户_{user_id}_观影记录.csv",
+            file_name=f"{current_user_label(user_id)}_观影记录.csv",
             mime="text/csv",
         )
 
@@ -169,6 +174,6 @@ with preference_tab:
         fig = px.bar(
             profile.head(15), x="genre", y="affinity", color="support",
             labels={"genre": "类型", "affinity": "相对个人均分偏差", "support": "历史支持数"},
-            title="类型偏好（训练期评分 + 本地反馈轻量修正）",
+            title="类型偏好（参考画像 + 个人反馈修正）" if account_mode() else "类型偏好（训练期评分 + 本地反馈轻量修正）",
         )
         st.plotly_chart(fig, width="stretch")

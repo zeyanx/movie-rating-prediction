@@ -42,6 +42,9 @@ class Stage6AppTests(unittest.TestCase):
     def test_model_lab(self) -> None:
         self._assert_page("app_pages/model_lab.py", "模型分析")
 
+    def test_account_settings_local_fallback(self) -> None:
+        self._assert_page("app_pages/account.py", "账户设置")
+
 
 if __name__ == "__main__":
     unittest.main()

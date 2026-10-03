@@ -28,6 +28,13 @@ FEEDBACK_LABELS = {
 
 def ensure_session_state() -> tuple[int, str]:
     config = load_app_config()
+    account_profile = st.session_state.get("account_profile")
+    if account_profile:
+        user_id = int(account_profile["model_user_id"])
+        profile_key = str(account_profile["user_id"])
+        st.session_state["selected_user_id"] = user_id
+        st.session_state["profile_key"] = profile_key
+        return user_id, profile_key
     if "selected_user_id" not in st.session_state:
         st.session_state["selected_user_id"] = int(config["default_user_id"])
     user_id = int(st.session_state["selected_user_id"])
@@ -54,4 +61,16 @@ def page_intro(title: str, caption: str) -> None:
 
 
 def show_interaction_notice() -> None:
-    st.info("切换当前用户后，预测评分和推荐结果会同步更新。")
+    if st.session_state.get("account_profile"):
+        st.info("你的观影反馈会保存到个人账户，并用于调整后续推荐。")
+    else:
+        st.info("切换当前用户后，预测评分和推荐结果会同步更新。")
+
+
+def current_user_label(user_id: int) -> str:
+    profile = st.session_state.get("account_profile")
+    return str(profile["display_name"]) if profile else f"#{user_id}"
+
+
+def account_mode() -> bool:
+    return bool(st.session_state.get("account_profile"))

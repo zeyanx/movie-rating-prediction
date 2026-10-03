@@ -6,8 +6,8 @@ import streamlit as st
 
 from movie_rating.web.config import PROJECT_ROOT
 from movie_rating.web.data_service import load_stage5_reports
-from movie_rating.web.database import get_interactions
-from movie_rating.web.ui import MODEL_LABELS, ensure_session_state, page_intro
+from movie_rating.web.user_store import get_catalog_interactions, get_interactions
+from movie_rating.web.ui import MODEL_LABELS, current_user_label, ensure_session_state, page_intro
 from movie_rating.web.unified_service import (
     recommend_unified_movies,
     search_unified_catalog,
@@ -29,7 +29,7 @@ c1, c2, c3, c4 = st.columns(4)
 c1.metric("电影总数", f"{len(catalog):,}")
 c2.metric("中国电影", f"{china_count:,}")
 c3.metric("其他国家电影", f"{international_count:,}")
-c4.metric("当前用户", f"#{user_id}")
+c4.metric("当前账户", current_user_label(user_id))
 
 left, right = st.columns([1, 1])
 with left:
@@ -50,8 +50,11 @@ with left:
 with right:
     st.subheader("为你推荐")
     interactions = get_interactions(profile_key)
+    catalog_interactions = get_catalog_interactions(profile_key)
     with st.spinner("正在生成推荐预览……"):
-        preview = recommend_unified_movies(user_id, interactions, top_n=4)
+        preview = recommend_unified_movies(
+            user_id, interactions, top_n=4, catalog_interactions=catalog_interactions
+        )
     for row in preview.itertuples(index=False):
         st.markdown(f"**{row.title_zh}** · 推荐 {float(row.final_score):.2f} 分")
         st.caption(f"{row.origin} · {row.reasons[0]}")
@@ -73,6 +76,7 @@ st.markdown(
     "- **评分预测**：查看多模型预测评分和评分依据。\n"
     "- **个性化推荐**：获取混合电影推荐及推荐理由。\n"
     "- **我的观影**：管理评分历史与个人观影记录。\n"
+    "- **账户设置**：更新昵称和冷启动类型偏好。\n"
     "- **模型分析**：比较不同模型的误差、效率和特征重要性。"
 )
 
