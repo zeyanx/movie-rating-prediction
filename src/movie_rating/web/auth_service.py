@@ -51,14 +51,27 @@ def get_supabase_client() -> Client:
 def _auth_message(exc: Exception) -> str:
     """将远端异常转换为适合公开页面的有限提示，不回显请求或密钥。"""
     text = str(exc).lower()
+    if "email_not_confirmed" in text or "email not confirmed" in text:
+        return "邮箱尚未验证，请先打开确认邮件完成验证后再登录。"
     if "invalid login" in text or "invalid_credentials" in text:
         return "邮箱或密码不正确。"
-    if "already registered" in text or "user_already_exists" in text:
-        return "该邮箱已经注册，请直接登录。"
+    duplicate_markers = (
+        "already registered",
+        "user_already_exists",
+        "email_exists",
+        "duplicate key value",
+        "users_email_partial_key",
+    )
+    if any(marker in text for marker in duplicate_markers):
+        return "该邮箱已创建账户或确认邮件已发送，请检查收件箱后登录，不要重复提交。"
     if "password" in text and ("weak" in text or "least" in text):
         return "密码强度不足，请至少使用8位并混合字母与数字。"
-    if "rate" in text and "limit" in text:
-        return "操作过于频繁，请稍后再试。"
+    if (
+        "over_email_send_rate_limit" in text
+        or "can only request this after" in text
+        or ("rate" in text and "limit" in text)
+    ):
+        return "确认邮件发送过于频繁，请等待至少60秒，并检查收件箱或垃圾邮件。"
     return "账户服务暂时无法完成请求，请稍后重试。"
 
 
@@ -150,7 +163,10 @@ def _render_login(client: Client) -> None:
                         "options": {"data": {"display_name": display_name.strip()}},
                     })
                     if response.session is None:
-                        st.success("账户已创建，请先打开验证邮件完成确认，再返回登录。")
+                        st.success(
+                            "账户已创建，确认邮件已发送。请勿重复注册；检查收件箱或垃圾邮件，"
+                            "完成验证后再返回登录。"
+                        )
                     else:
                         st.session_state["pending_display_name"] = display_name.strip()
                         st.rerun()
